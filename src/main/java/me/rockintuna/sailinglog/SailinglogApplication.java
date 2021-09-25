@@ -9,7 +9,6 @@ import javax.annotation.PostConstruct;
 import java.util.TimeZone;
 
 @SpringBootApplication
-@EnableJpaAuditing
 public class SailinglogApplication {
 
     @PostConstruct
