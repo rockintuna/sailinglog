@@ -8,7 +8,7 @@ import org.apache.commons.text.StringEscapeUtils;
 public class HtmlCharacterEscapes extends CharacterEscapes {
     private final int[] asciiEscapes;
 
-    public HtmlCharacterEscapes(int[] asciiEscapes) {
+    public HtmlCharacterEscapes() {
         this.asciiEscapes = CharacterEscapes.standardAsciiEscapesForJSON();
         this.asciiEscapes['<'] = CharacterEscapes.ESCAPE_CUSTOM;
         this.asciiEscapes['>'] = CharacterEscapes.ESCAPE_CUSTOM;
