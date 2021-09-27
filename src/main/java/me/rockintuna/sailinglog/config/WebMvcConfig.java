@@ -2,7 +2,6 @@ package me.rockintuna.sailinglog.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -17,7 +16,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Bean
     public HttpMessageConverter<?> htmlEscapingConverter() {
-        objectMapper.getFactory().setCharacterEscapes(new HtmlCharacterEscapes());
-        return new MappingJackson2HttpMessageConverter(objectMapper);
+        ObjectMapper copiedObjectMapper = objectMapper.copy();
+        copiedObjectMapper.getFactory().setCharacterEscapes(new HtmlCharacterEscapes());
+        return new MappingJackson2HttpMessageConverter(copiedObjectMapper);
     }
 }
