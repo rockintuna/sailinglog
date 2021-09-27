@@ -47,6 +47,8 @@ class ArticleControllerTest {
                 new ArticleRequestDto("test title 2", "tester", "test content 2")));
         articleList.add(Article.from(
                 new ArticleRequestDto("test title 3", "tester", "test content 3")));
+        articleList.add(Article.from(
+                new ArticleRequestDto("test title 4", "tester", "<script>alert('XSS');</script>")));
     }
 
     @Test
@@ -65,9 +67,9 @@ class ArticleControllerTest {
                 .andExpect(jsonPath("$[0].title").value("test title 1"))
                 .andExpect(jsonPath("$[0].writer").value("tester"))
                 .andExpect(jsonPath("$[0].content").value("test content 1"))
-                .andExpect(jsonPath("$[2].title").value("test title 3"))
-                .andExpect(jsonPath("$[2].writer").value("tester"))
-                .andExpect(jsonPath("$[2].content").value("test content 3"));
+                .andExpect(jsonPath("$[3].title").value("test title 4"))
+                .andExpect(jsonPath("$[3].writer").value("tester"))
+                .andExpect(jsonPath("$[3].content").value("&lt;script&gt;alert('XSS');&lt;/script&gt;"));
 
         verify(articleService).getArticlesOrderByCreatedAtDesc();
     }
@@ -86,6 +88,22 @@ class ArticleControllerTest {
                 .andExpect(jsonPath("$.content").value("test content 1"));
 
         verify(articleService).getArticleById(1L);
+    }
+
+    @Test
+    void getXSSArticleById() throws Exception {
+        given(articleService.getArticleById(4L))
+                .willReturn(articleList.get(3));
+
+        mvc.perform(MockMvcRequestBuilders.get("/articles/4"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.title").value("test title 4"))
+                .andExpect(jsonPath("$.writer").value("tester"))
+                .andExpect(jsonPath("$.content").value("&lt;script&gt;alert('XSS');&lt;/script&gt;"));
+
+        verify(articleService).getArticleById(4L);
     }
 
     @Test
