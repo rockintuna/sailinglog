@@ -20,6 +20,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -58,7 +60,8 @@ class ArticleControllerTest {
                 .willReturn(articleList);
 
         //when
-        mvc.perform(MockMvcRequestBuilders.get("/articles"))
+        mvc.perform(MockMvcRequestBuilders.get("/articles")
+                        .with(user("jilee").roles("USER")))
                 .andDo(print())
 
                 //then
@@ -79,7 +82,8 @@ class ArticleControllerTest {
         given(articleService.getArticleById(1L))
                 .willReturn(articleList.get(0));
 
-        mvc.perform(MockMvcRequestBuilders.get("/articles/1"))
+        mvc.perform(MockMvcRequestBuilders.get("/articles/1")
+                        .with(user("jilee").roles("USER")))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -95,7 +99,8 @@ class ArticleControllerTest {
         given(articleService.getArticleById(4L))
                 .willReturn(articleList.get(3));
 
-        mvc.perform(MockMvcRequestBuilders.get("/articles/4"))
+        mvc.perform(MockMvcRequestBuilders.get("/articles/4")
+                        .with(user("jilee").roles("USER")))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -116,8 +121,10 @@ class ArticleControllerTest {
                 .willReturn(articleList.get(0));
 
         mvc.perform(post("/articles")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(jsonString))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonString)
+                        .with(user("jilee").roles("USER"))
+                        .with(csrf()))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -138,8 +145,10 @@ class ArticleControllerTest {
                 .willReturn(1L);
 
         mvc.perform(MockMvcRequestBuilders.put("/articles/1")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(jsonString))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonString)
+                        .with(user("jilee").roles("USER"))
+                        .with(csrf()))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().string("1"));
@@ -152,7 +161,9 @@ class ArticleControllerTest {
         given(articleService.deleteArticleById(1L))
                 .willReturn(1L);
 
-        mvc.perform(MockMvcRequestBuilders.delete("/articles/1"))
+        mvc.perform(MockMvcRequestBuilders.delete("/articles/1")
+                        .with(user("jilee").roles("USER"))
+                        .with(csrf()))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().string("1"));

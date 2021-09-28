@@ -1,7 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+
+    <!--  CSRF Token  -->
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+
     <title>Sailing - Log</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -136,6 +142,8 @@
     }
 
     function addArticles() {
+        let token = $("meta[name='_csrf']").attr("content");
+        let header = $("meta[name='_csrf_header']").attr("content");
         let title = $('#title').val();
         let writer = $('#writer').val();
         let content = $('#content').val();
@@ -151,6 +159,11 @@
             url: "/articles",
             contentType: "application/json",
             data: JSON.stringify(data),
+            beforeSend: function(xhr) {
+                if(token && header) {
+                    xhr.setRequestHeader(header, token);
+                }
+            },
             success: function (response) {
                 window.location.reload();
             }
@@ -158,6 +171,8 @@
     }
 
     function updateArticle(id) {
+        let token = $("meta[name='_csrf']").attr("content");
+        let header = $("meta[name='_csrf_header']").attr("content");
         let title = $(`#input-title-${id}`).val();
         let writer = $(`#input-writer-${id}`).val();
         let content = $(`#input-content-${id}`).val();
@@ -173,6 +188,11 @@
             url: `/articles/${id}`,
             contentType: "application/json",
             data: JSON.stringify(data),
+            beforeSend: function(xhr) {
+                if(token && header) {
+                    xhr.setRequestHeader(header, token);
+                }
+            },
             success: function (response) {
                 alert('수정 완료.');
                 window.location.reload();
@@ -181,9 +201,16 @@
     }
 
     function deleteArticle(id) {
+        let token = $("meta[name='_csrf']").attr("content");
+        let header = $("meta[name='_csrf_header']").attr("content");
         $.ajax({
             type: "DELETE",
             url: `/articles/${id}`,
+            beforeSend: function(xhr) {
+                if(token && header) {
+                    xhr.setRequestHeader(header, token);
+                }
+            },
             success: function (response) {
                 alert('삭제 완료.');
                 window.location.reload();
@@ -216,14 +243,15 @@
 
 <div class="article-form">
     <div class="mb-3">
-        <label class="form-label">제목</label>
+        <label for="title" class="form-label">제목</label>
         <input id="title" class="form-control">
     </div>
     <div class="mb-3">
-        <label class="form-label">작성자</label>
+        <label for="writer" class="form-label">작성자</label>
         <input id="writer" class="form-control">
     </div>
     <div class="mb-3">
+        <label for="content" class="form-label">내용</label>
         <textarea class="form-control" id="content" rows="10"></textarea>
     </div>
     <div class="d-grid gap-2 d-md-flex justify-content-md-end">
