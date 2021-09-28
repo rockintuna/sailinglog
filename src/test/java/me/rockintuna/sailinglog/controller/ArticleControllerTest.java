@@ -1,10 +1,12 @@
 package me.rockintuna.sailinglog.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import me.rockintuna.sailinglog.config.exception.ArticleNotFoundException;
 import me.rockintuna.sailinglog.domain.Article;
 import me.rockintuna.sailinglog.domain.ArticleRequestDto;
 import me.rockintuna.sailinglog.service.ArticleService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -22,7 +24,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -54,6 +56,7 @@ class ArticleControllerTest {
     }
 
     @Test
+    @DisplayName("GET /articles")
     void getArticlesOrderByCreatedAtDesc() throws Exception {
         //given
         given(articleService.getArticlesOrderByCreatedAtDesc())
@@ -78,6 +81,7 @@ class ArticleControllerTest {
     }
 
     @Test
+    @DisplayName("GET /articles/{id}")
     void getArticleById() throws Exception {
         given(articleService.getArticleById(1L))
                 .willReturn(articleList.get(0));
@@ -95,6 +99,21 @@ class ArticleControllerTest {
     }
 
     @Test
+    @DisplayName("GET /articles/{id} with invalid article ID")
+    void getArticleByInvalidId() throws Exception {
+        given(articleService.getArticleById(99L))
+                .willThrow(new ArticleNotFoundException());
+
+        mvc.perform(MockMvcRequestBuilders.get("/articles/99")
+                        .with(user("jilee").roles("USER")))
+                .andDo(print())
+                .andExpect(status().isNotFound());
+
+        verify(articleService).getArticleById(99L);
+    }
+
+    @Test
+    @DisplayName("GET /articles/{id} by XSS attack")
     void getXSSArticleById() throws Exception {
         given(articleService.getArticleById(4L))
                 .willReturn(articleList.get(3));
@@ -112,6 +131,7 @@ class ArticleControllerTest {
     }
 
     @Test
+    @DisplayName("POST /articles")
     void createArticle() throws Exception {
         ArticleRequestDto requestDto =
                 new ArticleRequestDto("test title 1", "tester", "test content 1");
@@ -136,6 +156,7 @@ class ArticleControllerTest {
     }
 
     @Test
+    @DisplayName("PUT /articles/{id}")
     void updateArticle() throws Exception {
         ArticleRequestDto requestDto =
                 new ArticleRequestDto("test title 1", "tester", "test content 1");
@@ -144,7 +165,7 @@ class ArticleControllerTest {
         given(articleService.updateArticle(eq(1L), any(ArticleRequestDto.class)))
                 .willReturn(1L);
 
-        mvc.perform(MockMvcRequestBuilders.put("/articles/1")
+        mvc.perform(put("/articles/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonString)
                         .with(user("jilee").roles("USER"))
@@ -157,11 +178,33 @@ class ArticleControllerTest {
     }
 
     @Test
+    @DisplayName("PUT /articles/{id} with invalid article ID")
+    void updateArticleByInvalidId() throws Exception {
+        ArticleRequestDto requestDto =
+                new ArticleRequestDto("test title 1", "tester", "test content 1");
+        String jsonString = objectMapper.writeValueAsString(requestDto);
+
+        given(articleService.updateArticle(eq(99L), any(ArticleRequestDto.class)))
+                .willThrow(new ArticleNotFoundException());
+
+        mvc.perform(put("/articles/99")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonString)
+                        .with(user("jilee").roles("USER"))
+                        .with(csrf()))
+                .andDo(print())
+                .andExpect(status().isNotFound());
+
+        verify(articleService).updateArticle(eq(99L), any(ArticleRequestDto.class));
+    }
+
+    @Test
+    @DisplayName("DELETE /articles/{id}")
     void deleteArticleById() throws Exception {
         given(articleService.deleteArticleById(1L))
                 .willReturn(1L);
 
-        mvc.perform(MockMvcRequestBuilders.delete("/articles/1")
+        mvc.perform(delete("/articles/1")
                         .with(user("jilee").roles("USER"))
                         .with(csrf()))
                 .andDo(print())
@@ -169,5 +212,20 @@ class ArticleControllerTest {
                 .andExpect(content().string("1"));
 
         verify(articleService).deleteArticleById(1L);
+    }
+
+    @Test
+    @DisplayName("DELETE /articles/{id} with invalid article ID")
+    void deleteArticleByInvalidId() throws Exception {
+        given(articleService.deleteArticleById(99L))
+                .willThrow(new ArticleNotFoundException());
+
+        mvc.perform(delete("/articles/99")
+                        .with(user("jilee").roles("USER"))
+                        .with(csrf()))
+                .andDo(print())
+                .andExpect(status().isNotFound());
+
+        verify(articleService).deleteArticleById(99L);
     }
 }

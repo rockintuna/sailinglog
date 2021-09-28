@@ -1,6 +1,7 @@
 package me.rockintuna.sailinglog.service;
 
 import lombok.RequiredArgsConstructor;
+import me.rockintuna.sailinglog.config.exception.ArticleNotFoundException;
 import me.rockintuna.sailinglog.domain.Article;
 import me.rockintuna.sailinglog.domain.ArticleRepository;
 import me.rockintuna.sailinglog.domain.ArticleRequestDto;
@@ -21,7 +22,7 @@ public class ArticleService {
 
     public Article getArticleById(Long id) {
         return articleRepository.findById(id).orElseThrow(
-                () -> new RuntimeException("게시글 아이디가 존재하지 않습니다.")
+                ArticleNotFoundException::new
         );
     }
 
