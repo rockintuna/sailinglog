@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import me.rockintuna.sailinglog.domain.Article;
 import me.rockintuna.sailinglog.domain.ArticleRequestDto;
 import me.rockintuna.sailinglog.service.ArticleService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,27 +16,29 @@ public class ArticleController {
     private final ArticleService articleService;
 
     @GetMapping("/articles")
-    public List<Article> getArticlesOrderByCreatedAtDesc() {
-        return articleService.getArticlesOrderByCreatedAtDesc();
+    public ResponseEntity<List<Article>> getArticlesOrderByCreatedAtDesc() {
+        return ResponseEntity.ok(articleService.getArticlesOrderByCreatedAtDesc());
     }
 
     @GetMapping("/articles/{id}")
-    public Article getArticleById(@PathVariable Long id) {
-        return articleService.getArticleById(id);
+    public ResponseEntity<Article> getArticleById(@PathVariable Long id) {
+        return ResponseEntity.ok(articleService.getArticleById(id));
     }
 
     @PostMapping("/articles")
-    public Article createArticle(@RequestBody ArticleRequestDto requestDto) {
-        return articleService.createArticle(requestDto);
+    public ResponseEntity<Article> createArticle(@RequestBody ArticleRequestDto requestDto) {
+        return ResponseEntity.ok(articleService.createArticle(requestDto));
     }
 
     @PutMapping("/articles/{id}")
-    public Long updateArticle(@PathVariable Long id, @RequestBody ArticleRequestDto requestDto) {
-        return articleService.updateArticle(id, requestDto);
+    public ResponseEntity<Void> updateArticle(@PathVariable Long id, @RequestBody ArticleRequestDto requestDto) {
+        articleService.updateArticle(id, requestDto);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/articles/{id}")
-    public Long deleteArticleById(@PathVariable Long id) {
-        return articleService.deleteArticleById(id);
+    public ResponseEntity<Void> deleteArticleById(@PathVariable Long id) {
+        articleService.deleteArticleById(id);
+        return ResponseEntity.ok().build();
     }
 }
