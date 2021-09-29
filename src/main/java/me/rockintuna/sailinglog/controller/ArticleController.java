@@ -16,18 +16,18 @@ public class ArticleController {
     private final ArticleService articleService;
 
     @GetMapping("/articles")
-    public ResponseEntity<List<Article>> getArticlesOrderByCreatedAtDesc() {
-        return ResponseEntity.ok(articleService.getArticlesOrderByCreatedAtDesc());
+    public List<Article> getArticlesOrderByCreatedAtDesc() {
+        return articleService.getArticlesOrderByCreatedAtDesc();
     }
 
     @GetMapping("/articles/{id}")
-    public ResponseEntity<Article> getArticleById(@PathVariable Long id) {
-        return ResponseEntity.ok(articleService.getArticleById(id));
+    public Article getArticleById(@PathVariable Long id) {
+        return articleService.getArticleById(id);
     }
 
     @PostMapping("/articles")
-    public ResponseEntity<Article> createArticle(@RequestBody ArticleRequestDto requestDto) {
-        return ResponseEntity.ok(articleService.createArticle(requestDto));
+    public Article createArticle(@RequestBody ArticleRequestDto requestDto) {
+        return articleService.createArticle(requestDto);
     }
 
     @PutMapping("/articles/{id}")
