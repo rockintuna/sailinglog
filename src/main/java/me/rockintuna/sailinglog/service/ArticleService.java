@@ -31,10 +31,10 @@ public class ArticleService {
         return articleRepository.save(article);
     }
 
-    @Transactional
     public Long updateArticle(Long id, ArticleRequestDto requestDto) {
         Article article = getArticleById(id);
         article.updateBy(requestDto);
+        articleRepository.save(article);
         return id;
     }
 
