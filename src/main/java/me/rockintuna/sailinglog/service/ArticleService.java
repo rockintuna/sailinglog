@@ -5,9 +5,9 @@ import me.rockintuna.sailinglog.config.exception.ArticleNotFoundException;
 import me.rockintuna.sailinglog.domain.Article;
 import me.rockintuna.sailinglog.domain.ArticleRepository;
 import me.rockintuna.sailinglog.domain.ArticleRequestDto;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
@@ -31,15 +31,18 @@ public class ArticleService {
         return articleRepository.save(article);
     }
 
-    public Long updateArticle(Long id, ArticleRequestDto requestDto) {
+    public void updateArticle(Long id, ArticleRequestDto requestDto) {
         Article article = getArticleById(id);
         article.updateBy(requestDto);
         articleRepository.save(article);
-        return id;
     }
 
-    public Long deleteArticleById(Long id) {
-        articleRepository.deleteById(id);
-        return id;
+    public void deleteArticleById(Long id) {
+        try {
+            articleRepository.deleteById(id);
+        } catch (EmptyResultDataAccessException e) {
+            throw new ArticleNotFoundException();
+        }
+
     }
 }
