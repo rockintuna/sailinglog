@@ -21,6 +21,7 @@ import java.util.List;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.verify;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
@@ -162,17 +163,13 @@ class ArticleControllerTest {
                 new ArticleRequestDto("test title 1", "tester", "test content 1");
         String jsonString = objectMapper.writeValueAsString(requestDto);
 
-        given(articleService.updateArticle(eq(1L), any(ArticleRequestDto.class)))
-                .willReturn(1L);
-
         mvc.perform(put("/articles/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonString)
                         .with(user("jilee").roles("USER"))
                         .with(csrf()))
                 .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().string("1"));
+                .andExpect(status().isOk());
 
         verify(articleService).updateArticle(eq(1L), any(ArticleRequestDto.class));
     }
@@ -184,8 +181,8 @@ class ArticleControllerTest {
                 new ArticleRequestDto("test title 1", "tester", "test content 1");
         String jsonString = objectMapper.writeValueAsString(requestDto);
 
-        given(articleService.updateArticle(eq(99L), any(ArticleRequestDto.class)))
-                .willThrow(new ArticleNotFoundException());
+        willThrow(ArticleNotFoundException.class)
+                .given(articleService).updateArticle(eq(99L), any(ArticleRequestDto.class));
 
         mvc.perform(put("/articles/99")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -201,15 +198,12 @@ class ArticleControllerTest {
     @Test
     @DisplayName("DELETE /articles/{id}")
     void deleteArticleById() throws Exception {
-        given(articleService.deleteArticleById(1L))
-                .willReturn(1L);
 
         mvc.perform(delete("/articles/1")
                         .with(user("jilee").roles("USER"))
                         .with(csrf()))
                 .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().string("1"));
+                .andExpect(status().isOk());
 
         verify(articleService).deleteArticleById(1L);
     }
@@ -217,8 +211,8 @@ class ArticleControllerTest {
     @Test
     @DisplayName("DELETE /articles/{id} with invalid article ID")
     void deleteArticleByInvalidId() throws Exception {
-        given(articleService.deleteArticleById(99L))
-                .willThrow(new ArticleNotFoundException());
+        willThrow(ArticleNotFoundException.class)
+                .given(articleService).deleteArticleById(99L);
 
         mvc.perform(delete("/articles/99")
                         .with(user("jilee").roles("USER"))

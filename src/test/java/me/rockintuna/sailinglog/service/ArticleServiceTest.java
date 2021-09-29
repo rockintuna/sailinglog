@@ -1,22 +1,27 @@
 package me.rockintuna.sailinglog.service;
 
+import me.rockintuna.sailinglog.config.exception.ArticleNotFoundException;
 import me.rockintuna.sailinglog.domain.Article;
 import me.rockintuna.sailinglog.domain.ArticleRepository;
 import me.rockintuna.sailinglog.domain.ArticleRequestDto;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -44,6 +49,7 @@ class ArticleServiceTest {
     }
 
     @Test
+    @DisplayName("최근 생성 순으로 게시글 목록 조회")
     void getArticlesOrderByCreatedAtDesc() {
         // given
         given(articleRepository.findAllByOrderByCreatedAtDesc()).willReturn(mockArticleList);
@@ -65,6 +71,7 @@ class ArticleServiceTest {
     }
 
     @Test
+    @DisplayName("게시글 ID로 조회")
     void getArticleById() {
         given(articleRepository.findById(1L))
                 .willReturn(Optional.of(mockArticleList.get(0)));
@@ -80,6 +87,18 @@ class ArticleServiceTest {
     }
 
     @Test
+    @DisplayName("존재하지 않는 게시글 ID로 조회")
+    void getArticleByInvalidId() {
+        given(articleRepository.findById(99L))
+                .willReturn(Optional.empty());
+
+        assertThatThrownBy(() -> articleService.getArticleById(99L))
+                .isInstanceOf(ArticleNotFoundException.class);
+        verify(articleRepository).findById(99L);
+    }
+
+    @Test
+    @DisplayName("게시글 생성")
     void createArticle() {
         ArticleRequestDto requestDto =
                 new ArticleRequestDto("test title 1", "tester", "test content 1");
@@ -97,27 +116,46 @@ class ArticleServiceTest {
     }
 
     @Test
+    @DisplayName("게시글 ID로 게시글 수정")
     void updateArticle() {
         ArticleRequestDto requestDto =
                 new ArticleRequestDto("updated title 1", "tester", "updated content 1");
-        //todo
 
-//        Long articleId = articleService.updateArticle(3L, requestDto);
+        given(articleRepository.findById(3L))
+                .willReturn(Optional.of(mockArticleList.get(0)));
 
-//        SoftAssertions softly = new SoftAssertions();
-//        softly.assertThat(articleId).isEqualTo(3L);
-//        softly.assertAll();
-
-//        verify(articleService).getArticleById(3L);
+        articleService.updateArticle(3L, requestDto);
+        verify(articleRepository).save(any(Article.class));
     }
 
     @Test
-    void deleteArticleById() {
-        Long articleId = articleService.deleteArticleById(3L);
+    @DisplayName("존재하지 않는 게시글 ID로 수정")
+    void updateArticleByInvalidId() {
+        ArticleRequestDto requestDto =
+                new ArticleRequestDto("updated title 1", "tester", "updated content 1");
+        given(articleRepository.findById(99L))
+                .willReturn(Optional.empty());
 
-        SoftAssertions softly = new SoftAssertions();
-        softly.assertThat(articleId).isEqualTo(3L);
-        softly.assertAll();
+        assertThatThrownBy(() -> articleService.updateArticle(99L, requestDto))
+                .isInstanceOf(ArticleNotFoundException.class);
+        verify(articleRepository).findById(99L);
+    }
+
+    @Test
+    @DisplayName("게시글 ID로 게시글 삭제")
+    void deleteArticleById() {
+        articleService.deleteArticleById(3L);
         verify(articleRepository).deleteById(3L);
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 게시글 ID로 삭제")
+    void deleteArticleByInvalidId() {
+        willThrow(EmptyResultDataAccessException.class)
+                .given(articleRepository).deleteById(99L);
+
+        assertThatThrownBy(() -> articleService.deleteArticleById(99L))
+                .isInstanceOf(ArticleNotFoundException.class);
+        verify(articleRepository).deleteById(99L);
     }
 }
