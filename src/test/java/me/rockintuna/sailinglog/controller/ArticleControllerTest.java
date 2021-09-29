@@ -41,18 +41,18 @@ class ArticleControllerTest {
     @MockBean
     private ArticleService articleService;
 
-    List<Article> articleList = new ArrayList<>();
+    List<Article> mockArticleList = new ArrayList<>();
 
     @BeforeEach
     private void beforeEach() {
         //given
-        articleList.add(Article.from(
+        mockArticleList.add(Article.from(
                 new ArticleRequestDto("test title 1", "tester", "test content 1")));
-        articleList.add(Article.from(
+        mockArticleList.add(Article.from(
                 new ArticleRequestDto("test title 2", "tester", "test content 2")));
-        articleList.add(Article.from(
+        mockArticleList.add(Article.from(
                 new ArticleRequestDto("test title 3", "tester", "test content 3")));
-        articleList.add(Article.from(
+        mockArticleList.add(Article.from(
                 new ArticleRequestDto("test title 4", "tester", "<script>alert('XSS');</script>")));
     }
 
@@ -61,7 +61,7 @@ class ArticleControllerTest {
     void getArticlesOrderByCreatedAtDesc() throws Exception {
         //given
         given(articleService.getArticlesOrderByCreatedAtDesc())
-                .willReturn(articleList);
+                .willReturn(mockArticleList);
 
         //when
         mvc.perform(MockMvcRequestBuilders.get("/articles")
@@ -71,12 +71,20 @@ class ArticleControllerTest {
                 //then
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$[0].title").value("test title 1"))
-                .andExpect(jsonPath("$[0].writer").value("tester"))
-                .andExpect(jsonPath("$[0].content").value("test content 1"))
-                .andExpect(jsonPath("$[3].title").value("test title 4"))
-                .andExpect(jsonPath("$[3].writer").value("tester"))
-                .andExpect(jsonPath("$[3].content").value("&lt;script&gt;alert('XSS');&lt;/script&gt;"));
+                .andExpect(jsonPath("$[0].title")
+                        .value(mockArticleList.get(0).getTitle()))
+                .andExpect(jsonPath("$[0].writer")
+                        .value(mockArticleList.get(0).getWriter()))
+                .andExpect(jsonPath("$[0].content")
+                        .value(mockArticleList.get(0).getContent()))
+                .andExpect(jsonPath("$[3].title")
+                        .value(mockArticleList.get(3).getTitle()))
+                .andExpect(jsonPath("$[3].writer")
+                        .value(mockArticleList.get(3).getWriter()))
+                .andExpect(jsonPath("$[3].content")
+                        .value(mockArticleList.get(3).getContent()
+                        .replace("<","&lt;")
+                        .replace(">","&gt;")));
 
         verify(articleService).getArticlesOrderByCreatedAtDesc();
     }
@@ -85,16 +93,16 @@ class ArticleControllerTest {
     @DisplayName("GET /articles/{id}")
     void getArticleById() throws Exception {
         given(articleService.getArticleById(1L))
-                .willReturn(articleList.get(0));
+                .willReturn(mockArticleList.get(0));
 
         mvc.perform(MockMvcRequestBuilders.get("/articles/1")
                         .with(user("jilee").roles("USER")))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.title").value("test title 1"))
-                .andExpect(jsonPath("$.writer").value("tester"))
-                .andExpect(jsonPath("$.content").value("test content 1"));
+                .andExpect(jsonPath("$.title").value(mockArticleList.get(0).getTitle()))
+                .andExpect(jsonPath("$.writer").value(mockArticleList.get(0).getWriter()))
+                .andExpect(jsonPath("$.content").value(mockArticleList.get(0).getContent()));
 
         verify(articleService).getArticleById(1L);
     }
@@ -117,16 +125,21 @@ class ArticleControllerTest {
     @DisplayName("GET /articles/{id} by XSS attack")
     void getXSSArticleById() throws Exception {
         given(articleService.getArticleById(4L))
-                .willReturn(articleList.get(3));
+                .willReturn(mockArticleList.get(3));
 
         mvc.perform(MockMvcRequestBuilders.get("/articles/4")
                         .with(user("jilee").roles("USER")))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.title").value("test title 4"))
-                .andExpect(jsonPath("$.writer").value("tester"))
-                .andExpect(jsonPath("$.content").value("&lt;script&gt;alert('XSS');&lt;/script&gt;"));
+                .andExpect(jsonPath("$.title")
+                        .value(mockArticleList.get(3).getTitle()))
+                .andExpect(jsonPath("$.writer")
+                        .value(mockArticleList.get(3).getWriter()))
+                .andExpect(jsonPath("$.content")
+                        .value(mockArticleList.get(3).getContent()
+                                .replace("<","&lt;")
+                                .replace(">","&gt;")));
 
         verify(articleService).getArticleById(4L);
     }
@@ -139,7 +152,7 @@ class ArticleControllerTest {
         String jsonString = objectMapper.writeValueAsString(requestDto);
 
         given(articleService.createArticle(any(ArticleRequestDto.class)))
-                .willReturn(articleList.get(0));
+                .willReturn(mockArticleList.get(0));
 
         mvc.perform(post("/articles")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -149,9 +162,9 @@ class ArticleControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.title").value("test title 1"))
-                .andExpect(jsonPath("$.writer").value("tester"))
-                .andExpect(jsonPath("$.content").value("test content 1"));
+                .andExpect(jsonPath("$.title").value(requestDto.getTitle()))
+                .andExpect(jsonPath("$.writer").value(requestDto.getWriter()))
+                .andExpect(jsonPath("$.content").value(requestDto.getContent()));
 
         verify(articleService).createArticle(any(ArticleRequestDto.class));
     }
