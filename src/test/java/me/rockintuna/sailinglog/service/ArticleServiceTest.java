@@ -49,7 +49,7 @@ class ArticleServiceTest {
     }
 
     @Test
-    @DisplayName("최근 생성 순으로 게시글 목록 조회")
+    @DisplayName("게시글 목록 조회")
     void getArticlesOrderByCreatedAtDesc() {
         // given
         given(articleRepository.findAllByOrderByCreatedAtDesc()).willReturn(mockArticleList);
