@@ -22,6 +22,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
@@ -170,6 +171,41 @@ class ArticleControllerTest {
     }
 
     @Test
+    @DisplayName("POST /articles with invalid requestDto")
+    void createArticleWithInvalidData() throws Exception {
+        ArticleRequestDto requestDto =
+                new ArticleRequestDto("test title 1", "tester", "test content 1");
+        String jsonString = objectMapper.writeValueAsString(requestDto)
+                        .replace("writer","retirw");
+
+        mvc.perform(post("/articles")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonString)
+                        .with(user("jilee").roles("USER"))
+                        .with(csrf()))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+
+        verify(articleService, never()).createArticle(any());
+    }
+
+    @Test
+    @DisplayName("POST /articles with no CSRF Token")
+    void createArticleWithNoCSRFToken() throws Exception {
+        ArticleRequestDto requestDto =
+                new ArticleRequestDto("test title 1", "tester", "test content 1");
+        String jsonString = objectMapper.writeValueAsString(requestDto);
+
+        mvc.perform(post("/articles")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonString))
+                .andDo(print())
+                .andExpect(status().isForbidden());
+
+        verify(articleService, never()).createArticle(any());
+    }
+
+    @Test
     @DisplayName("PUT /articles/{id}")
     void updateArticle() throws Exception {
         ArticleRequestDto requestDto =
@@ -193,7 +229,6 @@ class ArticleControllerTest {
         ArticleRequestDto requestDto =
                 new ArticleRequestDto("test title 1", "tester", "test content 1");
         String jsonString = objectMapper.writeValueAsString(requestDto);
-
         willThrow(ArticleNotFoundException.class)
                 .given(articleService).updateArticle(eq(99L), any(ArticleRequestDto.class));
 
@@ -206,6 +241,59 @@ class ArticleControllerTest {
                 .andExpect(status().isNotFound());
 
         verify(articleService).updateArticle(eq(99L), any(ArticleRequestDto.class));
+    }
+
+    @Test
+    @DisplayName("PUT /articles/{id} with null ID")
+    void updateArticleByIdNull() throws Exception {
+        ArticleRequestDto requestDto =
+                new ArticleRequestDto("test title 1", "tester", "test content 1");
+        String jsonString = objectMapper.writeValueAsString(requestDto);
+
+        mvc.perform(put("/articles/")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonString)
+                        .with(user("jilee").roles("USER"))
+                        .with(csrf()))
+                .andDo(print())
+                .andExpect(status().isMethodNotAllowed());
+
+        verify(articleService, never()).updateArticle(any(), any());
+    }
+
+    @Test
+    @DisplayName("PUT /articles/{id} with invalid requestDto")
+    void updateArticleWithInvalidData() throws Exception {
+        ArticleRequestDto requestDto =
+                new ArticleRequestDto("test title 1", "tester", "test content 1");
+        String jsonString = objectMapper.writeValueAsString(requestDto)
+                .replace("writer","retirw");
+
+        mvc.perform(put("/articles/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonString)
+                        .with(user("jilee").roles("USER"))
+                        .with(csrf()))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+
+        verify(articleService, never()).updateArticle(any(), any());
+    }
+
+    @Test
+    @DisplayName("PUT /articles/{id} with no CSRF Token")
+    void updateArticleWithNoCSRFToken() throws Exception {
+        ArticleRequestDto requestDto =
+                new ArticleRequestDto("test title 1", "tester", "test content 1");
+        String jsonString = objectMapper.writeValueAsString(requestDto);
+
+        mvc.perform(post("/articles")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonString))
+                .andDo(print())
+                .andExpect(status().isForbidden());
+
+        verify(articleService, never()).updateArticle(any(), any());
     }
 
     @Test
@@ -234,5 +322,28 @@ class ArticleControllerTest {
                 .andExpect(status().isNotFound());
 
         verify(articleService).deleteArticleById(99L);
+    }
+
+    @Test
+    @DisplayName("DELETE /articles/{id} with null ID")
+    void deleteArticleByIdNull() throws Exception {
+        mvc.perform(delete("/articles/")
+                        .with(user("jilee").roles("USER"))
+                        .with(csrf()))
+                .andDo(print())
+                .andExpect(status().isMethodNotAllowed());
+
+        verify(articleService, never()).deleteArticleById(any());
+    }
+
+    @Test
+    @DisplayName("DELETE /articles/{id} with no CSRF Token")
+    void deleteArticleWithNoCSRFToken() throws Exception {
+        mvc.perform(post("/articles/1")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isForbidden());
+
+        verify(articleService, never()).deleteArticleById(any());
     }
 }
