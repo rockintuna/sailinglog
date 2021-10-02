@@ -2,10 +2,12 @@ package me.rockintuna.sailinglog.controller;
 
 import me.rockintuna.sailinglog.dto.AccountRequestDto;
 import me.rockintuna.sailinglog.service.AccountService;
+import me.rockintuna.sailinglog.service.UserDetailsServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
@@ -24,6 +26,8 @@ class AccountControllerTest {
 
     @MockBean
     private AccountService accountService;
+    @MockBean
+    private UserDetailsService userDetailsService;
 
     @Test
     void getRegisterPage() throws Exception {
@@ -57,6 +61,8 @@ class AccountControllerTest {
         mvc.perform(post("/account/login"))
                 .andDo(print())
                 .andExpect(status().is3xxRedirection());
+
+        verify(userDetailsService).loadUserByUsername(any());
     }
 
 }

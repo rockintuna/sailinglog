@@ -32,9 +32,4 @@ public class AccountController {
         return "login";
     }
 
-    @PostMapping("/login")
-    public String login() {
-        return "redirect:/";
-    }
-
 }
