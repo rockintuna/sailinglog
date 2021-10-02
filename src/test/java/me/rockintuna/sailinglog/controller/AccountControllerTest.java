@@ -1,5 +1,6 @@
 package me.rockintuna.sailinglog.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import me.rockintuna.sailinglog.dto.AccountRequestDto;
 import me.rockintuna.sailinglog.service.AccountService;
 import me.rockintuna.sailinglog.service.UserDetailsServiceImpl;
@@ -7,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -24,10 +26,13 @@ class AccountControllerTest {
     @Autowired
     private MockMvc mvc;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
     @MockBean
     private AccountService accountService;
     @MockBean
-    private UserDetailsService userDetailsService;
+    private UserDetailsServiceImpl userDetailsService;
 
     @Test
     void getRegisterPage() throws Exception {
@@ -39,9 +44,11 @@ class AccountControllerTest {
 
     @Test
     void register() throws Exception {
+        AccountRequestDto requestDto = new AccountRequestDto("jilee", "password");
+        String json = objectMapper.writeValueAsString(requestDto);
         mvc.perform(post("/account/register")
-                        .param("username","jilee")
-                        .param("password", "password"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
                 .andDo(print())
                 .andExpect(status().is3xxRedirection());
 
@@ -61,8 +68,6 @@ class AccountControllerTest {
         mvc.perform(post("/account/login"))
                 .andDo(print())
                 .andExpect(status().is3xxRedirection());
-
-        verify(userDetailsService).loadUserByUsername(any());
     }
 
 }

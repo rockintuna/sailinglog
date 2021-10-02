@@ -7,7 +7,9 @@ import me.rockintuna.sailinglog.repository.AccountRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
 
+@Service
 @RequiredArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
 
@@ -18,6 +20,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         Account account = accountRepository.findByUsername(username).orElseThrow(
                 () -> new UsernameNotFoundException("유저가 존재하지 않습니다.")
         );
-        return UserDetailsImpl.from(account);
+        return UserDetailsImpl.of(account);
     }
 }

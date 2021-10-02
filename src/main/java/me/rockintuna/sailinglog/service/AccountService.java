@@ -17,7 +17,7 @@ public class AccountService {
 
     public void registerAccount(AccountRequestDto requestDto) {
         if ( accountRepository.findByUsername(requestDto.getUsername()).isPresent() ) {
-            throw new UsernameExistException("이미 존재하는 username 입니다.");
+            throw new UsernameExistException("중복된 닉네임입니다.");
         }
         String password = requestDto.getPassword();
         String encodedPassword = passwordEncoder.encode(password);

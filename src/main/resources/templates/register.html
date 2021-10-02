@@ -21,7 +21,7 @@
         if ( !isVaidUsername(username) ) {
           alert("닉네임은 3자리 이상 문자, 숫자로 구성하여야 합니다.");
         } else if ( !isValidPassword(username, password) ) {
-          alert("비밀번호는 4자리 이상이며 닉네임을 포함할 수 없습니다..")
+          alert("비밀번호는 4자리 이상이며 공백 또는 닉네임을 포함할 수 없습니다.")
         } else if ( !passwordIsChecked(password, password_check) ) {
           alert("비밀번호가 일치하지 않습니다.");
         } else {
@@ -35,8 +35,8 @@
             success: function (response) {
               window.location.replace("/account/login");
             },
-            error: function (request, status, error) {
-              alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+            error: function (request) {
+              alert(request.responseText);
             }
           })
         }
@@ -48,7 +48,7 @@
     }
 
     function isValidPassword(username, password) {
-      return !(password.includes(username) || password.length < 4);
+      return !(password.includes(username) || password.includes(' ') || password.length < 4);
     }
 
     function passwordIsChecked(password, password_check) {

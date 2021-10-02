@@ -20,6 +20,7 @@
     <button id="login-id-btn" onclick="location.href='/account/register'">
         회원 가입하기
     </button>
+    <div id="login-failed" style="display:none" class="alert alert-danger" role="alert">닉네임 또는 패스워드를 확인해주세요</div>
     <form action="/account/login" method="post">
         <div class="login-id-label">아이디</div>
         <input type="text" name="username" class="login-input-box">
@@ -29,7 +30,7 @@
 
         <button id="login-id-submit">로그인</button>
     </form>
-    <div id="login-failed" style="display:none" class="alert alert-danger" role="alert">로그인에 실패하였습니다.</div>
+
 </div>
 </body>
 <script>

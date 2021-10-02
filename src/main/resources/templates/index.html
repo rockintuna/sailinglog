@@ -7,6 +7,7 @@
     <!--  CSRF Token  -->
     <meta name="_csrf" th:content="${_csrf.token}"/>
     <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <meta name="username" th:content="${username}"/>
 
     <title>Sailing - Log</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -142,17 +143,22 @@
     }
 
     function addArticles() {
+        let username = $("meta[name='username']").attr("content")
+        if ( username == null ) {
+            alert('로그인이 필요합니다.');
+            window.location.replace('/account/login');
+            return;
+        }
         let token = $("meta[name='_csrf']").attr("content");
         let header = $("meta[name='_csrf_header']").attr("content");
         let title = $('#title').val();
-        let writer = $('#writer').val();
         let content = $('#content').val();
 
-        if (isValidContents(title, writer, content) == false) {
+        if (isValidContents(title, content) == false) {
             return;
         }
 
-        let data = {'title': title, 'writer': writer, 'content': content};
+        let data = {'title': title, 'writer': username, 'content': content};
 
         $.ajax({
             type: "POST",
@@ -166,6 +172,9 @@
             },
             success: function (response) {
                 window.location.reload();
+            },
+            error: function (request) {
+                alert(request.message);
             }
         });
     }
@@ -225,6 +234,8 @@
         }
         return true;
     }
+
+
 </script>
 <body>
 <div class="container">
@@ -239,7 +250,6 @@
         </ul>
     </header>
 </div>
-
 
 <div class="article-form">
     <div class="mb-3">

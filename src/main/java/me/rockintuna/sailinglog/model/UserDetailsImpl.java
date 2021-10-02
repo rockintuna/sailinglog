@@ -6,13 +6,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 
 public class UserDetailsImpl implements UserDetails {
-    private Account account;
+    private final Account account;
 
     private UserDetailsImpl(Account account) {
         this.account = account;
     }
 
-    public static UserDetailsImpl from(Account account) {
+    public static UserDetailsImpl of(Account account) {
         return new UserDetailsImpl(account);
     }
 
@@ -34,21 +34,21 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isEnabled() {
-        return false;
+        return true;
     }
 }

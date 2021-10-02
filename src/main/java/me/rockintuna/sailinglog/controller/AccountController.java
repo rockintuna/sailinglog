@@ -21,7 +21,7 @@ public class AccountController {
     @PostMapping("/register")
     public String register(@RequestBody AccountRequestDto requestDto) {
         accountService.registerAccount(requestDto);
-        return "redirect:login";
+        return "redirect:/login";
     }
 
     @GetMapping("/login")

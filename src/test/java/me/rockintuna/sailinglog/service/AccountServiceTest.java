@@ -8,6 +8,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -21,6 +22,9 @@ class AccountServiceTest {
     @Mock
     private AccountRepository accountRepository;
 
+    @Mock
+    private PasswordEncoder passwordEncoder;
+
 
     @Test
     void registerAccount() {
@@ -29,7 +33,8 @@ class AccountServiceTest {
 
         articleService.registerAccount(accountRequestDto);
 
-        verify(accountRepository).findByUsername(any(String.class));
+        verify(accountRepository).findByUsername("jilee");
+        verify(passwordEncoder).encode("password");
         verify(accountRepository).save(any(Account.class));
     }
 }
