@@ -34,6 +34,9 @@
             data: JSON.stringify(data),
             success: function (response) {
               window.location.replace("/account/login");
+            },
+            error: function (request, status, error) {
+              alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
             }
           })
         }
