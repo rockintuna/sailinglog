@@ -1,12 +1,14 @@
 package me.rockintuna.sailinglog.model;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import me.rockintuna.sailinglog.dto.AccountRequestDto;
 
 import javax.persistence.*;
 
 @Entity
 @Getter
+@NoArgsConstructor
 public class Account extends Timestamped{
 
     @Id
