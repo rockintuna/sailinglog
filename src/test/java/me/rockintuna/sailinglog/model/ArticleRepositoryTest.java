@@ -1,6 +1,8 @@
-package me.rockintuna.sailinglog.domain;
+package me.rockintuna.sailinglog.model;
 
 import me.rockintuna.sailinglog.config.JpaAuditingConfiguration;
+import me.rockintuna.sailinglog.dto.ArticleRequestDto;
+import me.rockintuna.sailinglog.repository.ArticleRepository;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

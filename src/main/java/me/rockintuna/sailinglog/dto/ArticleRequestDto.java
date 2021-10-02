@@ -1,4 +1,4 @@
-package me.rockintuna.sailinglog.domain;
+package me.rockintuna.sailinglog.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

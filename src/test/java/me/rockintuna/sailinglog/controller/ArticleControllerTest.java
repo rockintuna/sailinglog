@@ -2,8 +2,8 @@ package me.rockintuna.sailinglog.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import me.rockintuna.sailinglog.config.exception.ArticleNotFoundException;
-import me.rockintuna.sailinglog.domain.Article;
-import me.rockintuna.sailinglog.domain.ArticleRequestDto;
+import me.rockintuna.sailinglog.model.Article;
+import me.rockintuna.sailinglog.dto.ArticleRequestDto;
 import me.rockintuna.sailinglog.service.ArticleService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

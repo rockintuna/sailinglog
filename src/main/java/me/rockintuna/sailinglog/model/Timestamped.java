@@ -1,4 +1,4 @@
-package me.rockintuna.sailinglog.domain;
+package me.rockintuna.sailinglog.model;
 
 import lombok.Getter;
 import org.springframework.data.annotation.CreatedDate;

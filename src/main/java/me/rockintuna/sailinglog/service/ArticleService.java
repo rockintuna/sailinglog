@@ -2,9 +2,9 @@ package me.rockintuna.sailinglog.service;
 
 import lombok.RequiredArgsConstructor;
 import me.rockintuna.sailinglog.config.exception.ArticleNotFoundException;
-import me.rockintuna.sailinglog.domain.Article;
-import me.rockintuna.sailinglog.domain.ArticleRepository;
-import me.rockintuna.sailinglog.domain.ArticleRequestDto;
+import me.rockintuna.sailinglog.model.Article;
+import me.rockintuna.sailinglog.repository.ArticleRepository;
+import me.rockintuna.sailinglog.dto.ArticleRequestDto;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 

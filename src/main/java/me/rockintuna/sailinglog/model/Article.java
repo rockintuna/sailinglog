@@ -1,7 +1,8 @@
-package me.rockintuna.sailinglog.domain;
+package me.rockintuna.sailinglog.model;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import me.rockintuna.sailinglog.dto.ArticleRequestDto;
 
 import javax.persistence.*;
 

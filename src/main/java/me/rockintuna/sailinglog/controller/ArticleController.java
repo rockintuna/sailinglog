@@ -1,8 +1,8 @@
 package me.rockintuna.sailinglog.controller;
 
 import lombok.RequiredArgsConstructor;
-import me.rockintuna.sailinglog.domain.Article;
-import me.rockintuna.sailinglog.domain.ArticleRequestDto;
+import me.rockintuna.sailinglog.model.Article;
+import me.rockintuna.sailinglog.dto.ArticleRequestDto;
 import me.rockintuna.sailinglog.service.ArticleService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
