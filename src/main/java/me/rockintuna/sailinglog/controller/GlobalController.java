@@ -1,5 +1,6 @@
-package me.rockintuna.sailinglog.config.exception;
+package me.rockintuna.sailinglog.controller;
 
+import me.rockintuna.sailinglog.config.exception.ArticleNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -9,7 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class GlobalController {
 
     @ExceptionHandler
-    public ResponseEntity<String> eventErrorHandler(ArticleNotFoundException exception) {
+    public ResponseEntity<String> articleNotFoundHandler(ArticleNotFoundException exception) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getMessage());
     }
 

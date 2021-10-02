@@ -4,10 +4,7 @@ import lombok.RequiredArgsConstructor;
 import me.rockintuna.sailinglog.dto.AccountRequestDto;
 import me.rockintuna.sailinglog.service.AccountService;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/account")
@@ -22,7 +19,7 @@ public class AccountController {
     }
 
     @PostMapping("/register")
-    public String register(@ModelAttribute AccountRequestDto requestDto) {
+    public String register(@RequestBody AccountRequestDto requestDto) {
         accountService.registerAccount(requestDto);
         return "redirect:login";
     }
