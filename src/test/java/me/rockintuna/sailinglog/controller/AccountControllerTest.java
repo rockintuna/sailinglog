@@ -27,7 +27,7 @@ class AccountControllerTest {
     void register() throws Exception {
         mvc.perform(post("/account/register"))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().is3xxRedirection());
     }
 
     @Test
@@ -41,7 +41,7 @@ class AccountControllerTest {
     void login() throws Exception {
         mvc.perform(post("/account/login"))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().is3xxRedirection());
     }
 
 }

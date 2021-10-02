@@ -12,22 +12,22 @@ public class AccountController {
 
     @GetMapping("/register")
     public String registerPage() {
-        return null;
+        return "register";
     }
 
     @PostMapping("/register")
     public String register() {
-        return null;
+        return "redirect:login";
     }
 
     @GetMapping("/login")
     public String loginPage() {
-        return null;
+        return "login";
     }
 
     @PostMapping("/login")
     public String login() {
-        return null;
+        return "redirect:/";
     }
 
 }
