@@ -18,15 +18,11 @@ public class Account extends Timestamped{
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false)
-    private String email;
-
     @Override
     public String toString() {
         return "Account{" +
                 "id=" + id +
                 ", username='" + username + '\'' +
-                ", email='" + email + '\'' +
                 '}';
     }
 }
