@@ -1,6 +1,7 @@
 package me.rockintuna.sailinglog.dto;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 
 import java.util.UUID;
@@ -9,8 +10,11 @@ import java.util.UUID;
 @Setter
 public class KakaoAccountDto {
 
+    @NonNull
     private Long id;
+    @NonNull
     private String nickname;
+    @NonNull
     private String password;
 
     private KakaoAccountDto(Long id, String nickname) {

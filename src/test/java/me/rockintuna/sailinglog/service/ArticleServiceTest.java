@@ -39,13 +39,13 @@ class ArticleServiceTest {
     private void beforeEach() {
         //given
         mockArticleList.add(Article.from(
-                new ArticleRequestDto("test title 1", "tester", "test content 1")));
+                ArticleRequestDto.of("test title 1", "tester", "test content 1")));
         mockArticleList.add(Article.from(
-                new ArticleRequestDto("test title 2", "tester", "test content 2")));
+                ArticleRequestDto.of("test title 2", "tester", "test content 2")));
         mockArticleList.add(Article.from(
-                new ArticleRequestDto("test title 3", "tester", "test content 3")));
+                ArticleRequestDto.of("test title 3", "tester", "test content 3")));
         mockArticleList.add(Article.from(
-                new ArticleRequestDto("test title 4", "tester", "<script>alert('XSS');</script>")));
+                ArticleRequestDto.of("test title 4", "tester", "<script>alert('XSS');</script>")));
     }
 
     @Test
@@ -101,7 +101,7 @@ class ArticleServiceTest {
     @DisplayName("게시글 생성")
     void createArticle() {
         ArticleRequestDto requestDto =
-                new ArticleRequestDto("test title 1", "tester", "test content 1");
+                ArticleRequestDto.of("test title 1", "tester", "test content 1");
         Article mockArticle = Article.from(requestDto);
         given(articleRepository.save(any(Article.class))).willReturn(mockArticle);
 
@@ -119,7 +119,7 @@ class ArticleServiceTest {
     @DisplayName("게시글 ID로 게시글 수정")
     void updateArticle() {
         ArticleRequestDto requestDto =
-                new ArticleRequestDto("updated title 1", "tester", "updated content 1");
+                ArticleRequestDto.of("updated title 1", "tester", "updated content 1");
 
         given(articleRepository.findById(3L))
                 .willReturn(Optional.of(mockArticleList.get(0)));
@@ -132,7 +132,7 @@ class ArticleServiceTest {
     @DisplayName("존재하지 않는 게시글 ID로 수정")
     void updateArticleByInvalidId() {
         ArticleRequestDto requestDto =
-                new ArticleRequestDto("updated title 1", "tester", "updated content 1");
+                ArticleRequestDto.of("updated title 1", "tester", "updated content 1");
         given(articleRepository.findById(99L))
                 .willReturn(Optional.empty());
 

@@ -1,13 +1,15 @@
 package me.rockintuna.sailinglog.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 
 @Getter
 @Setter
 public class AccountRequestDto {
+    @NonNull
     private String username;
+    @NonNull
     private String password;
 
     private AccountRequestDto(String username, String password) {

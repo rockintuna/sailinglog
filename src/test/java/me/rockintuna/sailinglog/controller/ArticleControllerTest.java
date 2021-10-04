@@ -49,13 +49,13 @@ class ArticleControllerTest {
     private void beforeEach() {
         //given
         mockArticleList.add(Article.from(
-                new ArticleRequestDto("test title 1", "tester", "test content 1")));
+                ArticleRequestDto.of("test title 1", "tester", "test content 1")));
         mockArticleList.add(Article.from(
-                new ArticleRequestDto("test title 2", "tester", "test content 2")));
+                ArticleRequestDto.of("test title 2", "tester", "test content 2")));
         mockArticleList.add(Article.from(
-                new ArticleRequestDto("test title 3", "tester", "test content 3")));
+                ArticleRequestDto.of("test title 3", "tester", "test content 3")));
         mockArticleList.add(Article.from(
-                new ArticleRequestDto("test title 4", "tester", "<script>alert('XSS');</script>")));
+                ArticleRequestDto.of("test title 4", "tester", "<script>alert('XSS');</script>")));
     }
 
     @Test
@@ -150,7 +150,7 @@ class ArticleControllerTest {
     @DisplayName("POST /articles")
     void createArticle() throws Exception {
         ArticleRequestDto requestDto =
-                new ArticleRequestDto("test title 1", "tester", "test content 1");
+                ArticleRequestDto.of("test title 1", "tester", "test content 1");
         String jsonString = objectMapper.writeValueAsString(requestDto);
 
         given(articleService.createArticle(any(ArticleRequestDto.class)))
@@ -175,7 +175,7 @@ class ArticleControllerTest {
     @DisplayName("POST /articles with invalid requestDto")
     void createArticleWithInvalidData() throws Exception {
         ArticleRequestDto requestDto =
-                new ArticleRequestDto("test title 1", "tester", "test content 1");
+                ArticleRequestDto.of("test title 1", "tester", "test content 1");
         String jsonString = objectMapper.writeValueAsString(requestDto)
                         .replace("writer","retirw");
 
@@ -194,7 +194,7 @@ class ArticleControllerTest {
     @DisplayName("POST /articles with no CSRF Token")
     void createArticleWithNoCSRFToken() throws Exception {
         ArticleRequestDto requestDto =
-                new ArticleRequestDto("test title 1", "tester", "test content 1");
+                ArticleRequestDto.of("test title 1", "tester", "test content 1");
         String jsonString = objectMapper.writeValueAsString(requestDto);
 
         mvc.perform(post("/articles")
@@ -210,7 +210,7 @@ class ArticleControllerTest {
     @DisplayName("PUT /articles/{id}")
     void updateArticle() throws Exception {
         ArticleRequestDto requestDto =
-                new ArticleRequestDto("test title 1", "tester", "test content 1");
+                ArticleRequestDto.of("test title 1", "tester", "test content 1");
         String jsonString = objectMapper.writeValueAsString(requestDto);
 
         mvc.perform(put("/articles/1")
@@ -228,7 +228,7 @@ class ArticleControllerTest {
     @DisplayName("PUT /articles/{id} with invalid article ID")
     void updateArticleByInvalidId() throws Exception {
         ArticleRequestDto requestDto =
-                new ArticleRequestDto("test title 1", "tester", "test content 1");
+                ArticleRequestDto.of("test title 1", "tester", "test content 1");
         String jsonString = objectMapper.writeValueAsString(requestDto);
         willThrow(ArticleNotFoundException.class)
                 .given(articleService).updateArticle(eq(99L), any(ArticleRequestDto.class));
@@ -248,7 +248,7 @@ class ArticleControllerTest {
     @DisplayName("PUT /articles/{id} with null ID")
     void updateArticleByIdNull() throws Exception {
         ArticleRequestDto requestDto =
-                new ArticleRequestDto("test title 1", "tester", "test content 1");
+                ArticleRequestDto.of("test title 1", "tester", "test content 1");
         String jsonString = objectMapper.writeValueAsString(requestDto);
 
         mvc.perform(put("/articles/")
@@ -266,7 +266,7 @@ class ArticleControllerTest {
     @DisplayName("PUT /articles/{id} with invalid requestDto")
     void updateArticleWithInvalidData() throws Exception {
         ArticleRequestDto requestDto =
-                new ArticleRequestDto("test title 1", "tester", "test content 1");
+                ArticleRequestDto.of("test title 1", "tester", "test content 1");
         String jsonString = objectMapper.writeValueAsString(requestDto)
                 .replace("writer","retirw");
 
@@ -285,7 +285,7 @@ class ArticleControllerTest {
     @DisplayName("PUT /articles/{id} with no CSRF Token")
     void updateArticleWithNoCSRFToken() throws Exception {
         ArticleRequestDto requestDto =
-                new ArticleRequestDto("test title 1", "tester", "test content 1");
+                ArticleRequestDto.of("test title 1", "tester", "test content 1");
         String jsonString = objectMapper.writeValueAsString(requestDto);
 
         mvc.perform(post("/articles")

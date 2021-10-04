@@ -30,13 +30,13 @@ class ArticleRepositoryTest {
     private void beforeEach() throws InterruptedException {
         //given
         mockArticleList.add(Article.from(
-                new ArticleRequestDto("test title 1", "tester", "test content 1")));
+                ArticleRequestDto.of("test title 1", "tester", "test content 1")));
         mockArticleList.add(Article.from(
-                new ArticleRequestDto("test title 2", "tester", "test content 2")));
+                ArticleRequestDto.of("test title 2", "tester", "test content 2")));
         mockArticleList.add(Article.from(
-                new ArticleRequestDto("test title 3", "tester", "test content 3")));
+                ArticleRequestDto.of("test title 3", "tester", "test content 3")));
         mockArticleList.add(Article.from(
-                new ArticleRequestDto("test title 4", "tester", "<script>alert('XSS');</script>")));
+                ArticleRequestDto.of("test title 4", "tester", "<script>alert('XSS');</script>")));
 
         for (Article article : mockArticleList) {
             articleRepository.save(article);
@@ -66,7 +66,7 @@ class ArticleRepositoryTest {
     public void save() {
         //given
         Article article = Article.from(
-                new ArticleRequestDto("new title", "tester", "new content"));
+                ArticleRequestDto.of("new title", "tester", "new content"));
 
         //when
         Article saved = articleRepository.save(article);
