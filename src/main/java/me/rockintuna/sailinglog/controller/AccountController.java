@@ -8,6 +8,8 @@ import me.rockintuna.sailinglog.service.Oauth2Service;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @Controller
 @RequestMapping("/account")
 @RequiredArgsConstructor
@@ -22,7 +24,7 @@ public class AccountController {
     }
 
     @PostMapping("/register")
-    public String register(@RequestBody AccountRequestDto requestDto) {
+    public String register(@RequestBody @Valid AccountRequestDto requestDto) {
         accountService.registerAccount(requestDto);
         return "redirect:/login";
     }

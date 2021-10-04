@@ -32,7 +32,7 @@ class AccountServiceTest {
     @Test
     void registerAccount() {
         AccountRequestDto accountRequestDto =
-                AccountRequestDto.of("jilee", "password");
+                AccountRequestDto.of("jilee", "password", null);
 
         given(passwordEncoder.encode(accountRequestDto.getPassword()))
                 .willReturn("encodedPassword");
