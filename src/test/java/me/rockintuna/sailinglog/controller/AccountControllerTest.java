@@ -1,9 +1,13 @@
 package me.rockintuna.sailinglog.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import me.rockintuna.sailinglog.config.WebSecurityConfig;
 import me.rockintuna.sailinglog.config.exception.PasswordNeverContainsUsernameException;
 import me.rockintuna.sailinglog.config.exception.PasswordNotEqualsWithCheckException;
+import me.rockintuna.sailinglog.config.exception.UsernameExistException;
 import me.rockintuna.sailinglog.dto.AccountRequestDto;
+import me.rockintuna.sailinglog.model.Account;
+import me.rockintuna.sailinglog.model.UserDetailsImpl;
 import me.rockintuna.sailinglog.service.AccountService;
 import me.rockintuna.sailinglog.service.Oauth2Service;
 import me.rockintuna.sailinglog.service.UserDetailsServiceImpl;
@@ -13,14 +17,19 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders.formLogin;
+import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.authenticated;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -40,10 +49,6 @@ class AccountControllerTest {
 
     @MockBean
     private Oauth2Service oauth2Service;
-
-    @MockBean
-    private UserDetailsServiceImpl userDetailsService;
-
 
     @Nested
     @DisplayName("페이지 로딩")
@@ -84,7 +89,8 @@ class AccountControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(json))
                         .andDo(print())
-                        .andExpect(status().is3xxRedirection());
+                        .andExpect(status().is3xxRedirection())
+                        .andExpect(view().name("redirect:/account/login"));
 
                 verify(accountService).registerAccount(any(AccountRequestDto.class));
             }
@@ -92,9 +98,9 @@ class AccountControllerTest {
 
         @Nested
         @DisplayName("회원 가입 실패")
-        class RegisterFailed {
+        class RegisterFail {
             @Test
-            @DisplayName("짧은 Username 사용")
+            @DisplayName("짧은 Username")
             void registerFailedUsernameShort() throws Exception {
                 AccountRequestDto requestDto = AccountRequestDto
                         .of("ji", "password", "password");
@@ -109,7 +115,7 @@ class AccountControllerTest {
             }
 
             @Test
-            @DisplayName("특수문자 포함 Username 사용")
+            @DisplayName("특수문자 포함 Username")
             void registerFailedUsernameInvalid() throws Exception {
                 AccountRequestDto requestDto = AccountRequestDto
                         .of("jile/e", "password", "password");
@@ -124,7 +130,7 @@ class AccountControllerTest {
             }
 
             @Test
-            @DisplayName("공백 포함 Username 사용")
+            @DisplayName("공백 포함 Username")
             void registerFailedUsernameWithEmptySpace() throws Exception {
                 AccountRequestDto requestDto = AccountRequestDto
                         .of("jil ee", "password", "password");
@@ -139,7 +145,26 @@ class AccountControllerTest {
             }
 
             @Test
-            @DisplayName("짧은 암호 사용")
+            @DisplayName("이미 사용중인 Username")
+            void registerFailedUsernameExist() throws Exception {
+                AccountRequestDto requestDto = AccountRequestDto
+                        .of("jilee", "password", "password");
+                String json = objectMapper.writeValueAsString(requestDto);
+
+                willThrow(UsernameExistException.class)
+                        .given(accountService).registerAccount(any(AccountRequestDto.class));
+
+                mvc.perform(post("/account/register")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(json))
+                        .andDo(print())
+                        .andExpect(status().isBadRequest());
+
+                verify(accountService).registerAccount(any(AccountRequestDto.class));
+            }
+
+            @Test
+            @DisplayName("짧은 암호")
             void registerFailedPasswordShort() throws Exception {
                 AccountRequestDto requestDto = AccountRequestDto
                         .of("jilee", "123", "123");
@@ -154,7 +179,7 @@ class AccountControllerTest {
             }
 
             @Test
-            @DisplayName("Username을 포함하는 암호 사용")
+            @DisplayName("Username을 포함하는 암호")
             void registerFailedPasswordContainsUsername() throws Exception {
                 AccountRequestDto requestDto = AccountRequestDto
                         .of("jilee", "1jilee123", "1jilee123");
@@ -193,19 +218,6 @@ class AccountControllerTest {
 
         }
 
-    }
-
-    @Nested
-    @DisplayName("로그인")
-    class Login {
-
-        @Test
-        @DisplayName("로그인 성공")
-        void login() throws Exception {
-            mvc.perform(post("/account/login"))
-                    .andDo(print())
-                    .andExpect(status().is3xxRedirection());
-        }
     }
 
 }

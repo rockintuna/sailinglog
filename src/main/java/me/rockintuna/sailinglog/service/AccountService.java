@@ -18,7 +18,8 @@ public class AccountService {
 
     public void registerAccount(AccountRequestDto requestDto) {
         accountRequestDtoValidator.validate(requestDto);
-        accountRepository.save(Account.from(encodePasswordOf(requestDto)));
+        AccountRequestDto passwordEncodedRequestDto = encodePasswordOf(requestDto);
+        accountRepository.save(Account.from(passwordEncodedRequestDto));
     }
 
     private AccountRequestDto encodePasswordOf(AccountRequestDto requestDto) {
