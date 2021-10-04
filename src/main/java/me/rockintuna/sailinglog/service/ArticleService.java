@@ -34,18 +34,25 @@ public class ArticleService {
 
     public void updateArticle(Long id, ArticleRequestDto requestDto) {
         Article article = getArticleById(id);
-        if (!requestDto.getWriter().equals(article.getWriter())) {
-            throw new PermissionDeniedException("권한이 없습니다.");
-        }
+        String username = requestDto.getWriter();
+        checkPermission(article, username);
         article.updateBy(requestDto);
         articleRepository.save(article);
     }
 
     public void deleteArticle(Long id, String username) {
         Article article = getArticleById(id);
-        if (!username.equals(article.getWriter())) {
+        checkPermission(article, username);
+        articleRepository.deleteById(id);
+    }
+
+    private void checkPermission(Article article, String username) {
+        if (!isOwner(article, username)) {
             throw new PermissionDeniedException("권한이 없습니다.");
         }
-        articleRepository.deleteById(id);
+    }
+
+    private boolean isOwner(Article article, String username) {
+        return username.equals(article.getWriter());
     }
 }
