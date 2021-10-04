@@ -1,16 +1,24 @@
 package me.rockintuna.sailinglog.dto;
 
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.Setter;
+import org.hibernate.validator.constraints.Length;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 
 @Getter
 @Setter
 public class AccountRequestDto {
-    @NonNull
+    @NotBlank
+    @Length(min=3)
+    @Pattern(regexp = "^[a-zA-Z0-9]*$")
     private String username;
-    @NonNull
+    @NotBlank
+    @Length(min=4)
     private String password;
+    @NotBlank
+    private String passwordCheck;
 
     private AccountRequestDto(String username, String password) {
         this.username = username;
