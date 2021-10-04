@@ -3,6 +3,7 @@ package me.rockintuna.sailinglog.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import me.rockintuna.sailinglog.dto.AccountRequestDto;
 import me.rockintuna.sailinglog.service.AccountService;
+import me.rockintuna.sailinglog.service.Oauth2Service;
 import me.rockintuna.sailinglog.service.UserDetailsServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,8 @@ class AccountControllerTest {
 
     @MockBean
     private AccountService accountService;
+    @MockBean
+    private Oauth2Service oauth2Service;
     @MockBean
     private UserDetailsServiceImpl userDetailsService;
 
