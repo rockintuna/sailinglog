@@ -10,7 +10,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+
 import static org.mockito.ArgumentMatchers.any;
+
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -30,6 +33,9 @@ class AccountServiceTest {
     void registerAccount() {
         AccountRequestDto accountRequestDto =
                 AccountRequestDto.of("jilee", "password");
+
+        given(passwordEncoder.encode(accountRequestDto.getPassword()))
+                .willReturn("encodedPassword");
 
         articleService.registerAccount(accountRequestDto);
 
