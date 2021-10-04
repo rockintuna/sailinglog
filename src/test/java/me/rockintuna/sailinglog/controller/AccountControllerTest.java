@@ -1,6 +1,8 @@
 package me.rockintuna.sailinglog.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import me.rockintuna.sailinglog.config.exception.PasswordNeverContainsUsernameException;
+import me.rockintuna.sailinglog.config.exception.PasswordNotEqualsWithCheckException;
 import me.rockintuna.sailinglog.dto.AccountRequestDto;
 import me.rockintuna.sailinglog.service.AccountService;
 import me.rockintuna.sailinglog.service.Oauth2Service;
@@ -16,7 +18,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -44,7 +46,7 @@ class AccountControllerTest {
 
 
     @Nested
-    @DisplayName("회원 가입")
+    @DisplayName("페이지 로딩")
     class Page {
         @Test
         @DisplayName("회원 가입 페이지 로딩")
@@ -155,8 +157,11 @@ class AccountControllerTest {
             @DisplayName("Username을 포함하는 암호 사용")
             void registerFailedPasswordContainsUsername() throws Exception {
                 AccountRequestDto requestDto = AccountRequestDto
-                        .of("jilee", "sample", "sample");
+                        .of("jilee", "1jilee123", "1jilee123");
                 String json = objectMapper.writeValueAsString(requestDto);
+
+                willThrow(PasswordNeverContainsUsernameException.class)
+                        .given(accountService).registerAccount(any(AccountRequestDto.class));
 
                 mvc.perform(post("/account/register")
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -164,7 +169,26 @@ class AccountControllerTest {
                         .andDo(print())
                         .andExpect(status().isBadRequest());
 
-                verify(accountService, never()).registerAccount(any(AccountRequestDto.class));
+                verify(accountService).registerAccount(any(AccountRequestDto.class));
+            }
+
+            @Test
+            @DisplayName("패스워드 확인 틀림")
+            void registerFailedPasswordNotEqualsWithCheck() throws Exception {
+                AccountRequestDto requestDto = AccountRequestDto
+                        .of("jilee", "1jilee123", "1jilee124");
+                String json = objectMapper.writeValueAsString(requestDto);
+
+                willThrow(PasswordNotEqualsWithCheckException.class)
+                        .given(accountService).registerAccount(any(AccountRequestDto.class));
+
+                mvc.perform(post("/account/register")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(json))
+                        .andDo(print())
+                        .andExpect(status().isBadRequest());
+
+                verify(accountService).registerAccount(any(AccountRequestDto.class));
             }
 
         }
