@@ -16,8 +16,8 @@
     function onclickRegister() {
       let username = $('#username').val();
       let password = $('#password').val();
-      let password_check = $('#password').val();
-      let data = {'username': username, 'password': password, 'passwordCheck': password};
+      let password_check = $('#password-check').val();
+      let data = {'username': username, 'password': password, 'passwordCheck': password_check};
 
       $.ajax({
         type: 'POST',
