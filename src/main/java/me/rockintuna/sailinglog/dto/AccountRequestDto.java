@@ -1,13 +1,11 @@
 package me.rockintuna.sailinglog.dto;
 
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.Setter;
 import me.rockintuna.sailinglog.config.exception.PasswordNeverContainsUsernameException;
 import me.rockintuna.sailinglog.config.exception.PasswordNotEqualsWithCheckException;
 import org.hibernate.validator.constraints.Length;
 
-import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
@@ -15,22 +13,16 @@ import javax.validation.constraints.Pattern;
 @Setter
 public class AccountRequestDto {
     @NotNull
-    @Length(min=3)
-    @Pattern(regexp = "^[a-zA-Z0-9]*$")
+    @Length(min=3,message = "닉네임은 최소 3자 이상입니다.")
+    @Pattern(regexp = "^[a-zA-Z0-9]*$", message = "닉네임은 알파벡 대소문자 또는 숫자로만 이루어져있어야 합니다.")
     private String username;
     @NotNull
-    @Length(min=4)
+    @Length(min=4,message = "패스워드는 최소 4자 이상입니다.")
     private String password;
     @NotNull
     private String passwordCheck;
 
     private AccountRequestDto(String username, String password, String passwordCheck) {
-        if (!password.equals(passwordCheck)) {
-            throw new PasswordNotEqualsWithCheckException("패스워드가 일치하지 않습니다.");
-        }
-        if (!password.contains(username)) {
-            throw new PasswordNeverContainsUsernameException("패스워드는 닉네임을 포함할 수 없습니다.");
-        }
         this.username = username;
         this.password = password;
         this.passwordCheck = passwordCheck;

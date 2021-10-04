@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -141,6 +142,22 @@ class AccountControllerTest {
                 AccountRequestDto requestDto = AccountRequestDto
                         .of("jilee", "123", "123");
                 String json = objectMapper.writeValueAsString(requestDto);
+                mvc.perform(post("/account/register")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(json))
+                        .andDo(print())
+                        .andExpect(status().isBadRequest());
+
+                verify(accountService, never()).registerAccount(any(AccountRequestDto.class));
+            }
+
+            @Test
+            @DisplayName("Username을 포함하는 암호 사용")
+            void registerFailedPasswordContainsUsername() throws Exception {
+                AccountRequestDto requestDto = AccountRequestDto
+                        .of("jilee", "sample", "sample");
+                String json = objectMapper.writeValueAsString(requestDto);
+
                 mvc.perform(post("/account/register")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(json))
