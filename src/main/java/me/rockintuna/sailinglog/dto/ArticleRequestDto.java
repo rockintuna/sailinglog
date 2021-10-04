@@ -1,18 +1,19 @@
 package me.rockintuna.sailinglog.dto;
 
 import lombok.Getter;
-import lombok.NonNull;
+
+import javax.validation.constraints.NotNull;
 
 @Getter
 public class ArticleRequestDto {
-    @NonNull
+    @NotNull
     private final String title;
-    @NonNull
+    @NotNull
     private final String writer;
-    @NonNull
+    @NotNull
     private final String content;
 
-    private ArticleRequestDto(@NonNull String title, @NonNull String writer, @NonNull String content) {
+    private ArticleRequestDto(String title, String writer, String content) {
         this.title = title;
         this.writer = writer;
         this.content = content;
