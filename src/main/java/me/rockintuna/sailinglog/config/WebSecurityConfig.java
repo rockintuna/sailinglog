@@ -24,7 +24,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                     .failureUrl("/account/login?error")
                     .permitAll()
                 .and()
-                    .logout().logoutUrl("/account/logout")
+                    .logout().logoutUrl("/account/logout").permitAll()
                 .and()
                     .exceptionHandling()
                     .accessDeniedPage("/forbidden.html");

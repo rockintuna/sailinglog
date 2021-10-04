@@ -41,6 +41,11 @@
 </head>
 <script>
     $(document).ready(function () {
+        let username = $("meta[name='username']").attr("content")
+        if ( username != null ) {
+            $('#logout-form').show();
+            $('#login-form').hide();
+        }
         getArticles();
     })
 
@@ -215,6 +220,12 @@
     }
 
     function deleteArticle(id) {
+        let username = $("meta[name='username']").attr("content")
+        if ( username == null ) {
+            alert('로그인이 필요합니다.');
+            window.location.replace('/account/login');
+            return;
+        }
         let token = $("meta[name='_csrf']").attr("content");
         let header = $("meta[name='_csrf_header']").attr("content");
         $.ajax({
@@ -255,6 +266,14 @@
 
         <ul class="nav nav-pills">
             나만의 항해 블로그
+        </ul>
+        <ul>
+            <form id="logout-form" method="post" action="/account/logout" style="display: none">
+                <a id="logout-text" href="javascript:{}" onclick="document.getElementById('logout-form').submit();">로그아웃</a>
+            </form>
+            <form id="login-form" method="get" action="/account/login">
+                <a id="login-text" href="javascript:{}" onclick="document.getElementById('login-form').submit();">로그인</a>
+            </form>
         </ul>
     </header>
 </div>
