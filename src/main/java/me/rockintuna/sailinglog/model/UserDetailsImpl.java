@@ -1,5 +1,6 @@
 package me.rockintuna.sailinglog.model;
 
+import me.rockintuna.sailinglog.dto.KakaoAccountDto;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
