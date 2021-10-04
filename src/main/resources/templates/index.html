@@ -60,6 +60,9 @@
                     let createdAt = article['createdAt'];
                     addHTML(id, title, content, writer, createdAt);
                 }
+            },
+            error: function (request) {
+                alert(request.responseText);
             }
         })
     }
@@ -204,6 +207,9 @@
             success: function (response) {
                 alert('수정 완료.');
                 window.location.reload();
+            },
+            error: function (request) {
+                alert(request.responseText);
             }
         });
     }
@@ -222,6 +228,9 @@
             success: function (response) {
                 alert('삭제 완료.');
                 window.location.reload();
+            },
+            error: function (request) {
+                alert(request.responseText);
             }
         })
     }
