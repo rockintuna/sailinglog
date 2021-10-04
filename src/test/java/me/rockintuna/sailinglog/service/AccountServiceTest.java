@@ -39,7 +39,7 @@ class AccountServiceTest {
     private PasswordEncoder passwordEncoder;
 
     @Nested
-    @DisplayName("회원 가입")
+    @DisplayName("계정 서비스")
     class Register {
         @Nested
         @DisplayName("회원 가입 성공")

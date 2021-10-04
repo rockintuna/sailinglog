@@ -2,15 +2,15 @@ package me.rockintuna.sailinglog.dto;
 
 import lombok.Getter;
 
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotBlank;
 
 @Getter
 public class ArticleRequestDto {
-    @NotNull
+    @NotBlank
     private final String title;
-    @NotNull
+    @NotBlank
     private final String writer;
-    @NotNull
+    @NotBlank
     private final String content;
 
     private ArticleRequestDto(String title, String writer, String content) {

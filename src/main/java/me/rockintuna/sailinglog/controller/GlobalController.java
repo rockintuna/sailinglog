@@ -1,9 +1,6 @@
 package me.rockintuna.sailinglog.controller;
 
-import me.rockintuna.sailinglog.config.exception.ArticleNotFoundException;
-import me.rockintuna.sailinglog.config.exception.PasswordNeverContainsUsernameException;
-import me.rockintuna.sailinglog.config.exception.PasswordNotEqualsWithCheckException;
-import me.rockintuna.sailinglog.config.exception.UsernameExistException;
+import me.rockintuna.sailinglog.config.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -42,5 +39,10 @@ public class GlobalController {
     @ExceptionHandler
     public ResponseEntity<String> methodArgumentNotValidHandler(MethodArgumentNotValidException exception) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exception.getAllErrors().get(0).getDefaultMessage());
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<String> permissionDeniedHandler(PermissionDeniedException exception) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(exception.getMessage());
     }
 }

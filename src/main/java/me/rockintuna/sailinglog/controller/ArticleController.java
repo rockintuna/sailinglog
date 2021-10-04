@@ -1,12 +1,16 @@
 package me.rockintuna.sailinglog.controller;
 
 import lombok.RequiredArgsConstructor;
+import me.rockintuna.sailinglog.config.exception.PermissionDeniedException;
 import me.rockintuna.sailinglog.model.Article;
 import me.rockintuna.sailinglog.dto.ArticleRequestDto;
 import me.rockintuna.sailinglog.service.ArticleService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -26,20 +30,28 @@ public class ArticleController {
     }
 
     @PostMapping("/articles")
-    public Article createArticle(@RequestBody ArticleRequestDto requestDto) {
+    public Article createArticle(@RequestBody @Valid ArticleRequestDto requestDto) {
         return articleService.createArticle(requestDto);
     }
 
     @PutMapping("/articles/{id}")
-    public ResponseEntity<Void> updateArticle(@PathVariable Long id
-            , @RequestBody ArticleRequestDto requestDto) {
+    public ResponseEntity<Void> updateArticle(
+            @AuthenticationPrincipal UserDetails userDetails
+            , @PathVariable Long id
+            , @RequestBody @Valid ArticleRequestDto requestDto) {
+        if (!userDetails.getUsername().equals(requestDto.getWriter())) {
+            throw new PermissionDeniedException("권한이 없습니다.");
+        }
         articleService.updateArticle(id, requestDto);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/articles/{id}")
-    public ResponseEntity<Void> deleteArticleById(@PathVariable Long id) {
-        articleService.deleteArticleById(id);
+    public ResponseEntity<Void> deleteArticleById(
+            @AuthenticationPrincipal UserDetails userDetails
+            ,@PathVariable Long id) {
+        String username = userDetails.getUsername();
+        articleService.deleteArticle(id, username);
         return ResponseEntity.ok().build();
     }
 }

@@ -1,9 +1,10 @@
 package me.rockintuna.sailinglog.service;
 
 import me.rockintuna.sailinglog.config.exception.ArticleNotFoundException;
+import me.rockintuna.sailinglog.config.exception.PermissionDeniedException;
+import me.rockintuna.sailinglog.dto.ArticleRequestDto;
 import me.rockintuna.sailinglog.model.Article;
 import me.rockintuna.sailinglog.repository.ArticleRepository;
-import me.rockintuna.sailinglog.dto.ArticleRequestDto;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -13,20 +14,19 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.dao.EmptyResultDataAccessException;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.willThrow;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-@DisplayName("게시글 서비스")
 class ArticleServiceTest {
 
     @InjectMocks
@@ -186,7 +186,13 @@ class ArticleServiceTest {
             @Test
             @DisplayName("게시글 ID로 게시글 삭제")
             void deleteArticleById() {
-                articleService.deleteArticleById(3L);
+                Article article = Article.from(
+                        ArticleRequestDto.of("title", "jilee", "content")
+                );
+
+                given(articleRepository.findById(3L)).willReturn(Optional.of(article));
+
+                articleService.deleteArticle(3L, "jilee");
                 verify(articleRepository).deleteById(3L);
             }
         }
@@ -196,12 +202,15 @@ class ArticleServiceTest {
             @Test
             @DisplayName("존재하지 않는 게시글 ID로 삭제")
             void deleteArticleByInvalidId() {
-                willThrow(EmptyResultDataAccessException.class)
-                        .given(articleRepository).deleteById(99L);
+                Article article = Article.from(
+                        ArticleRequestDto.of("title", "tester", "content")
+                );
 
-                assertThatThrownBy(() -> articleService.deleteArticleById(99L))
-                        .isInstanceOf(ArticleNotFoundException.class);
-                verify(articleRepository).deleteById(99L);
+                given(articleRepository.findById(99L)).willReturn(Optional.of(article));
+
+                assertThrows(PermissionDeniedException.class,
+                        () -> articleService.deleteArticle(99L, "jilee"));
+                verify(articleRepository, never()).deleteById(any());
             }
         }
     }

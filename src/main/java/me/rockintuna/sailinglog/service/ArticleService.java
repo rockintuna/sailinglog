@@ -2,6 +2,7 @@ package me.rockintuna.sailinglog.service;
 
 import lombok.RequiredArgsConstructor;
 import me.rockintuna.sailinglog.config.exception.ArticleNotFoundException;
+import me.rockintuna.sailinglog.config.exception.PermissionDeniedException;
 import me.rockintuna.sailinglog.model.Article;
 import me.rockintuna.sailinglog.repository.ArticleRepository;
 import me.rockintuna.sailinglog.dto.ArticleRequestDto;
@@ -33,16 +34,18 @@ public class ArticleService {
 
     public void updateArticle(Long id, ArticleRequestDto requestDto) {
         Article article = getArticleById(id);
+        if (!requestDto.getWriter().equals(article.getWriter())) {
+            throw new PermissionDeniedException("권한이 없습니다.");
+        }
         article.updateBy(requestDto);
         articleRepository.save(article);
     }
 
-    public void deleteArticleById(Long id) {
-        try {
-            articleRepository.deleteById(id);
-        } catch (EmptyResultDataAccessException e) {
-            throw new ArticleNotFoundException();
+    public void deleteArticle(Long id, String username) {
+        Article article = getArticleById(id);
+        if (!username.equals(article.getWriter())) {
+            throw new PermissionDeniedException("권한이 없습니다.");
         }
-
+        articleRepository.deleteById(id);
     }
 }

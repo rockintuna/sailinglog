@@ -2,6 +2,7 @@ package me.rockintuna.sailinglog.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import me.rockintuna.sailinglog.config.exception.ArticleNotFoundException;
+import me.rockintuna.sailinglog.config.exception.PermissionDeniedException;
 import me.rockintuna.sailinglog.model.Article;
 import me.rockintuna.sailinglog.dto.ArticleRequestDto;
 import me.rockintuna.sailinglog.service.ArticleService;
@@ -13,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
@@ -115,26 +115,9 @@ class ArticleControllerTest {
 
                 verify(articleService).getArticleById(1L);
             }
-        }
-        @Nested
-        @DisplayName("Get 요청 실패")
-        class GetFail {
-            @Test
-            @DisplayName("GET /articles/{id} with invalid article ID")
-            void getArticleByInvalidId() throws Exception {
-                given(articleService.getArticleById(99L))
-                        .willThrow(new ArticleNotFoundException());
-
-                mvc.perform(MockMvcRequestBuilders.get("/articles/99")
-                                .with(user("jilee").roles("USER")))
-                        .andDo(print())
-                        .andExpect(status().isNotFound());
-
-                verify(articleService).getArticleById(99L);
-            }
 
             @Test
-            @DisplayName("GET /articles/{id} by XSS attack")
+            @DisplayName("GET /articles/{id} XSS 치환")
             void getXSSArticleById() throws Exception {
                 given(articleService.getArticleById(4L))
                         .willReturn(mockArticleList.get(3));
@@ -154,6 +137,23 @@ class ArticleControllerTest {
                                         .replace(">","&gt;")));
 
                 verify(articleService).getArticleById(4L);
+            }
+        }
+        @Nested
+        @DisplayName("Get 요청 실패")
+        class GetFail {
+            @Test
+            @DisplayName("GET /articles/{id} 없는 게시글 ID")
+            void getArticleByInvalidId() throws Exception {
+                given(articleService.getArticleById(99L))
+                        .willThrow(new ArticleNotFoundException());
+
+                mvc.perform(MockMvcRequestBuilders.get("/articles/99")
+                                .with(user("jilee").roles("USER")))
+                        .andDo(print())
+                        .andExpect(status().isNotFound());
+
+                verify(articleService).getArticleById(99L);
             }
         }
     }
@@ -192,7 +192,115 @@ class ArticleControllerTest {
         @DisplayName("Post 요청 실패")
         class PostFail {
             @Test
-            @DisplayName("POST /articles with invalid requestDto")
+            @DisplayName("POST /articles 제목 null")
+            void createArticleWithTitleNull() throws Exception {
+                ArticleRequestDto requestDto =
+                        ArticleRequestDto.of(null, "tester", "test content 1");
+                String jsonString = objectMapper.writeValueAsString(requestDto);
+
+                mvc.perform(post("/articles")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonString)
+                                .with(user("jilee").roles("USER"))
+                                .with(csrf()))
+                        .andDo(print())
+                        .andExpect(status().isBadRequest());
+
+                verify(articleService, never()).createArticle(any());
+            }
+
+            @Test
+            @DisplayName("POST /articles 제목 공백")
+            void createArticleWithTitleEmptySpace() throws Exception {
+                ArticleRequestDto requestDto =
+                        ArticleRequestDto.of("", "tester", "test content 1");
+                String jsonString = objectMapper.writeValueAsString(requestDto);
+
+                mvc.perform(post("/articles")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonString)
+                                .with(user("jilee").roles("USER"))
+                                .with(csrf()))
+                        .andDo(print())
+                        .andExpect(status().isBadRequest());
+
+                verify(articleService, never()).createArticle(any());
+            }
+
+            @Test
+            @DisplayName("POST /articles 작성자 null")
+            void createArticleWithWirterNull() throws Exception {
+                ArticleRequestDto requestDto =
+                        ArticleRequestDto.of("title", null, "test content 1");
+                String jsonString = objectMapper.writeValueAsString(requestDto);
+
+                mvc.perform(post("/articles")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonString)
+                                .with(user("jilee").roles("USER"))
+                                .with(csrf()))
+                        .andDo(print())
+                        .andExpect(status().isBadRequest());
+
+                verify(articleService, never()).createArticle(any());
+            }
+
+            @Test
+            @DisplayName("POST /articles 작성자 null")
+            void createArticleWithWirterEmptySpace() throws Exception {
+                ArticleRequestDto requestDto =
+                        ArticleRequestDto.of("title", "", "test content 1");
+                String jsonString = objectMapper.writeValueAsString(requestDto);
+
+                mvc.perform(post("/articles")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonString)
+                                .with(user("jilee").roles("USER"))
+                                .with(csrf()))
+                        .andDo(print())
+                        .andExpect(status().isBadRequest());
+
+                verify(articleService, never()).createArticle(any());
+            }
+
+            @Test
+            @DisplayName("POST /articles 내용 null")
+            void createArticleWithContentNull() throws Exception {
+                ArticleRequestDto requestDto =
+                        ArticleRequestDto.of("title", "tester", null);
+                String jsonString = objectMapper.writeValueAsString(requestDto);
+
+                mvc.perform(post("/articles")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonString)
+                                .with(user("jilee").roles("USER"))
+                                .with(csrf()))
+                        .andDo(print())
+                        .andExpect(status().isBadRequest());
+
+                verify(articleService, never()).createArticle(any());
+            }
+
+            @Test
+            @DisplayName("POST /articles 내용 공백")
+            void createArticleWithContentEmptySpace() throws Exception {
+                ArticleRequestDto requestDto =
+                        ArticleRequestDto.of("title", "tester", "");
+                String jsonString = objectMapper.writeValueAsString(requestDto);
+
+                mvc.perform(post("/articles")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonString)
+                                .with(user("jilee").roles("USER"))
+                                .with(csrf()))
+                        .andDo(print())
+                        .andExpect(status().isBadRequest());
+
+                verify(articleService, never()).createArticle(any());
+            }
+
+            @Test
+            @DisplayName("POST /articles 잘못된 Json 데이터")
             void createArticleWithInvalidData() throws Exception {
                 ArticleRequestDto requestDto =
                         ArticleRequestDto.of("test title 1", "tester", "test content 1");
@@ -211,7 +319,7 @@ class ArticleControllerTest {
             }
 
             @Test
-            @DisplayName("POST /articles with no CSRF Token")
+            @DisplayName("POST /articles CSRF Token 없음")
             void createArticleWithNoCSRFToken() throws Exception {
                 ArticleRequestDto requestDto =
                         ArticleRequestDto.of("test title 1", "tester", "test content 1");
@@ -222,6 +330,23 @@ class ArticleControllerTest {
                                 .content(jsonString))
                         .andDo(print())
                         .andExpect(status().isForbidden());
+
+                verify(articleService, never()).createArticle(any());
+            }
+
+            @Test
+            @DisplayName("POST /articles 로그인 안함")
+            void createArticleUnAuthenticated() throws Exception {
+                ArticleRequestDto requestDto =
+                        ArticleRequestDto.of("test title", "tester", "test content 1");
+                String jsonString = objectMapper.writeValueAsString(requestDto);
+
+                mvc.perform(post("/articles")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonString)
+                                .with(csrf()))
+                        .andDo(print())
+                        .andExpect(status().is3xxRedirection());
 
                 verify(articleService, never()).createArticle(any());
             }
@@ -243,7 +368,7 @@ class ArticleControllerTest {
                 mvc.perform(put("/articles/1")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonString)
-                                .with(user("jilee").roles("USER"))
+                                .with(user("tester").roles("USER"))
                                 .with(csrf()))
                         .andDo(print())
                         .andExpect(status().isOk());
@@ -255,7 +380,7 @@ class ArticleControllerTest {
         @DisplayName("Put 요청 실패")
         class PutFail {
             @Test
-            @DisplayName("PUT /articles/{id} with invalid article ID")
+            @DisplayName("PUT /articles/{id} 없는 게시글 ID")
             void updateArticleByInvalidId() throws Exception {
                 ArticleRequestDto requestDto =
                         ArticleRequestDto.of("test title 1", "tester", "test content 1");
@@ -266,7 +391,7 @@ class ArticleControllerTest {
                 mvc.perform(put("/articles/99")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonString)
-                                .with(user("jilee").roles("USER"))
+                                .with(user("tester").roles("USER"))
                                 .with(csrf()))
                         .andDo(print())
                         .andExpect(status().isNotFound());
@@ -275,7 +400,7 @@ class ArticleControllerTest {
             }
 
             @Test
-            @DisplayName("PUT /articles/{id} with null ID")
+            @DisplayName("PUT /articles/{id} ID null")
             void updateArticleByIdNull() throws Exception {
                 ArticleRequestDto requestDto =
                         ArticleRequestDto.of("test title 1", "tester", "test content 1");
@@ -284,7 +409,7 @@ class ArticleControllerTest {
                 mvc.perform(put("/articles/")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonString)
-                                .with(user("jilee").roles("USER"))
+                                .with(user("tester").roles("USER"))
                                 .with(csrf()))
                         .andDo(print())
                         .andExpect(status().isMethodNotAllowed());
@@ -293,7 +418,115 @@ class ArticleControllerTest {
             }
 
             @Test
-            @DisplayName("PUT /articles/{id} with invalid requestDto")
+            @DisplayName("PUT /articles/{id} 제목 null")
+            void createArticleWithTitleNull() throws Exception {
+                ArticleRequestDto requestDto =
+                        ArticleRequestDto.of(null, "tester", "test content 1");
+                String jsonString = objectMapper.writeValueAsString(requestDto);
+
+                mvc.perform(put("/articles/1")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonString)
+                                .with(user("tester").roles("USER"))
+                                .with(csrf()))
+                        .andDo(print())
+                        .andExpect(status().isBadRequest());
+
+                verify(articleService, never()).createArticle(any());
+            }
+
+            @Test
+            @DisplayName("PUT /articles/{id} 제목 공백")
+            void createArticleWithTitleEmptySpace() throws Exception {
+                ArticleRequestDto requestDto =
+                        ArticleRequestDto.of("", "tester", "test content 1");
+                String jsonString = objectMapper.writeValueAsString(requestDto);
+
+                mvc.perform(put("/articles/1")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonString)
+                                .with(user("tester").roles("USER"))
+                                .with(csrf()))
+                        .andDo(print())
+                        .andExpect(status().isBadRequest());
+
+                verify(articleService, never()).createArticle(any());
+            }
+
+            @Test
+            @DisplayName("PUT /articles/{id} 작성자 null")
+            void createArticleWithWirterNull() throws Exception {
+                ArticleRequestDto requestDto =
+                        ArticleRequestDto.of("title", null, "test content 1");
+                String jsonString = objectMapper.writeValueAsString(requestDto);
+
+                mvc.perform(put("/articles/1")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonString)
+                                .with(user("tester").roles("USER"))
+                                .with(csrf()))
+                        .andDo(print())
+                        .andExpect(status().isBadRequest());
+
+                verify(articleService, never()).createArticle(any());
+            }
+
+            @Test
+            @DisplayName("PUT /articles/{id} 작성자 null")
+            void createArticleWithWirterEmptySpace() throws Exception {
+                ArticleRequestDto requestDto =
+                        ArticleRequestDto.of("title", "", "test content 1");
+                String jsonString = objectMapper.writeValueAsString(requestDto);
+
+                mvc.perform(put("/articles/1")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonString)
+                                .with(user("tester").roles("USER"))
+                                .with(csrf()))
+                        .andDo(print())
+                        .andExpect(status().isBadRequest());
+
+                verify(articleService, never()).createArticle(any());
+            }
+
+            @Test
+            @DisplayName("PUT /articles/{id} 내용 null")
+            void createArticleWithContentNull() throws Exception {
+                ArticleRequestDto requestDto =
+                        ArticleRequestDto.of("title", "tester", null);
+                String jsonString = objectMapper.writeValueAsString(requestDto);
+
+                mvc.perform(put("/articles/1")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonString)
+                                .with(user("tester").roles("USER"))
+                                .with(csrf()))
+                        .andDo(print())
+                        .andExpect(status().isBadRequest());
+
+                verify(articleService, never()).createArticle(any());
+            }
+
+            @Test
+            @DisplayName("PUT /articles/{id} 내용 공백")
+            void createArticleWithContentEmptySpace() throws Exception {
+                ArticleRequestDto requestDto =
+                        ArticleRequestDto.of("title", "tester", "");
+                String jsonString = objectMapper.writeValueAsString(requestDto);
+
+                mvc.perform(put("/articles/1")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonString)
+                                .with(user("tester").roles("USER"))
+                                .with(csrf()))
+                        .andDo(print())
+                        .andExpect(status().isBadRequest());
+
+                verify(articleService, never()).createArticle(any());
+            }
+
+            @Test
+            @DisplayName("PUT /articles/{id} 잘못된 Json 데이터")
             void updateArticleWithInvalidData() throws Exception {
                 ArticleRequestDto requestDto =
                         ArticleRequestDto.of("test title 1", "tester", "test content 1");
@@ -303,7 +536,7 @@ class ArticleControllerTest {
                 mvc.perform(put("/articles/1")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(jsonString)
-                                .with(user("jilee").roles("USER"))
+                                .with(user("tester").roles("USER"))
                                 .with(csrf()))
                         .andDo(print())
                         .andExpect(status().isBadRequest());
@@ -312,7 +545,7 @@ class ArticleControllerTest {
             }
 
             @Test
-            @DisplayName("PUT /articles/{id} with no CSRF Token")
+            @DisplayName("PUT /articles/{id} CSRF Token 없음")
             void updateArticleWithNoCSRFToken() throws Exception {
                 ArticleRequestDto requestDto =
                         ArticleRequestDto.of("test title 1", "tester", "test content 1");
@@ -320,11 +553,47 @@ class ArticleControllerTest {
 
                 mvc.perform(post("/articles")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content(jsonString))
+                                .content(jsonString)
+                                .with(user("tester").roles("USER")))
                         .andDo(print())
                         .andExpect(status().isForbidden());
 
                 verify(articleService, never()).updateArticle(any(), any());
+            }
+
+            @Test
+            @DisplayName("PUT /articles/{id} 로그인 안함")
+            void updateArticleUnauthenticated() throws Exception {
+                ArticleRequestDto requestDto =
+                        ArticleRequestDto.of("test title 1", "tester", "test content 1");
+                String jsonString = objectMapper.writeValueAsString(requestDto);
+
+                mvc.perform(put("/articles/1")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonString)
+                                .with(csrf()))
+                        .andDo(print())
+                        .andExpect(status().is3xxRedirection());
+
+                verify(articleService,never()).updateArticle(any(), any());
+            }
+
+            @Test
+            @DisplayName("PUT /articles/{id} 권한 없음")
+            void updateArticleHasNoGranted() throws Exception {
+                ArticleRequestDto requestDto =
+                        ArticleRequestDto.of("test title 1", "tester", "test content 1");
+                String jsonString = objectMapper.writeValueAsString(requestDto);
+
+                mvc.perform(put("/articles/1")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonString)
+                                .with(csrf())
+                                .with(user("demo").roles("USER")))
+                        .andDo(print())
+                        .andExpect(status().isForbidden());
+
+                verify(articleService,never()).updateArticle(any(), any());
             }
         }
     }
@@ -344,17 +613,17 @@ class ArticleControllerTest {
                         .andDo(print())
                         .andExpect(status().isOk());
 
-                verify(articleService).deleteArticleById(1L);
+                verify(articleService).deleteArticle(1L, "jilee");
             }
         }
         @Nested
         @DisplayName("Delete 요청 실패")
         class DeleteFail {
             @Test
-            @DisplayName("DELETE /articles/{id} with invalid article ID")
+            @DisplayName("DELETE /articles/{id} 없는 게시글 ID")
             void deleteArticleByInvalidId() throws Exception {
                 willThrow(ArticleNotFoundException.class)
-                        .given(articleService).deleteArticleById(99L);
+                        .given(articleService).deleteArticle(99L, "jilee");
 
                 mvc.perform(delete("/articles/99")
                                 .with(user("jilee").roles("USER"))
@@ -362,11 +631,11 @@ class ArticleControllerTest {
                         .andDo(print())
                         .andExpect(status().isNotFound());
 
-                verify(articleService).deleteArticleById(99L);
+                verify(articleService).deleteArticle(99L, "jilee");
             }
 
             @Test
-            @DisplayName("DELETE /articles/{id} with null ID")
+            @DisplayName("DELETE /articles/{id} ID null")
             void deleteArticleByIdNull() throws Exception {
                 mvc.perform(delete("/articles/")
                                 .with(user("jilee").roles("USER"))
@@ -374,18 +643,47 @@ class ArticleControllerTest {
                         .andDo(print())
                         .andExpect(status().isMethodNotAllowed());
 
-                verify(articleService, never()).deleteArticleById(any());
+                verify(articleService, never()).deleteArticle(any(), any());
             }
 
             @Test
-            @DisplayName("DELETE /articles/{id} with no CSRF Token")
+            @DisplayName("DELETE /articles/{id} CSRF Token 없음")
             void deleteArticleWithNoCSRFToken() throws Exception {
                 mvc.perform(post("/articles/1")
                                 .contentType(MediaType.APPLICATION_JSON))
                         .andDo(print())
                         .andExpect(status().isForbidden());
 
-                verify(articleService, never()).deleteArticleById(any());
+                verify(articleService, never()).deleteArticle(any(), any());
+            }
+
+            @Test
+            @DisplayName("DELETE /articles/{id} 로그인 안함")
+            void deleteArticleById() throws Exception {
+
+                mvc.perform(delete("/articles/1")
+                                .with(csrf()))
+                        .andDo(print())
+                        .andExpect(status().is3xxRedirection());
+
+                verify(articleService, never()).deleteArticle(any(), any());
+            }
+
+            @Test
+            @DisplayName("DELETE /articles/{id} 권한 없음")
+            void updateArticleHasNoGranted() throws Exception {
+
+                willThrow(PermissionDeniedException.class)
+                        .given(articleService).deleteArticle(1L,"jilee");
+
+                mvc.perform(delete("/articles/1")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .with(csrf())
+                                .with(user("jilee").roles("USER")))
+                        .andDo(print())
+                        .andExpect(status().isForbidden());
+
+                verify(articleService,never()).updateArticle(any(), any());
             }
         }
     }
