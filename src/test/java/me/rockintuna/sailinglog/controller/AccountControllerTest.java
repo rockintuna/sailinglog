@@ -1,35 +1,26 @@
 package me.rockintuna.sailinglog.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import me.rockintuna.sailinglog.config.WebSecurityConfig;
 import me.rockintuna.sailinglog.config.exception.PasswordNeverContainsUsernameException;
 import me.rockintuna.sailinglog.config.exception.PasswordNotEqualsWithCheckException;
 import me.rockintuna.sailinglog.config.exception.UsernameExistException;
 import me.rockintuna.sailinglog.dto.AccountRequestDto;
-import me.rockintuna.sailinglog.model.Account;
-import me.rockintuna.sailinglog.model.UserDetailsImpl;
 import me.rockintuna.sailinglog.service.AccountService;
 import me.rockintuna.sailinglog.service.Oauth2Service;
-import me.rockintuna.sailinglog.service.UserDetailsServiceImpl;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestBuilders.formLogin;
-import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.authenticated;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;

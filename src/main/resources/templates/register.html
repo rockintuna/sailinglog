@@ -14,46 +14,26 @@
   <script>
 
     function onclickRegister() {
-        let username = $('#username').val();
-        let password = $('#password').val();
-        let password_check = $('#password').val();
+      let username = $('#username').val();
+      let password = $('#password').val();
+      let password_check = $('#password').val();
+      let data = {'username': username, 'password': password, 'passwordCheck': password};
 
-        if ( !isVaidUsername(username) ) {
-          alert("닉네임은 3자리 이상 문자, 숫자로 구성하여야 합니다.");
-        } else if ( !isValidPassword(username, password) ) {
-          alert("비밀번호는 4자리 이상이며 공백 또는 닉네임을 포함할 수 없습니다.")
-        } else if ( !passwordIsChecked(password, password_check) ) {
-          alert("비밀번호가 일치하지 않습니다.");
-        } else {
-          let data = {'username': username, 'password': password};
-
-          $.ajax({
-            type: 'POST',
-            url: '/account/register',
-            contentType: "application/json",
-            data: JSON.stringify(data),
-            success: function (response) {
-              window.location.replace("/account/login");
-            },
-            error: function (request) {
-              alert(request.responseText);
-            }
-          })
+      $.ajax({
+        type: 'POST',
+        url: '/account/register',
+        contentType: "application/json",
+        data: JSON.stringify(data),
+        success: function (response) {
+          window.location.replace("/account/login");
+        },
+        error: function (request) {
+          alert(request.responseText);
         }
+      })
+
     }
 
-    function isVaidUsername(username) {
-      var pattern1 = /^[a-zA-z0-9]*$/g;
-      return !(!pattern1.test(username) || username.length < 3);
-    }
-
-    function isValidPassword(username, password) {
-      return !(password.includes(username) || password.includes(' ') || password.length < 4);
-    }
-
-    function passwordIsChecked(password, password_check) {
-      return password == password_check;
-    }
   </script>
 </head>
 <body>

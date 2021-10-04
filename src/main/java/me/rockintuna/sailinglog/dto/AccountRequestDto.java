@@ -2,8 +2,6 @@ package me.rockintuna.sailinglog.dto;
 
 import lombok.Getter;
 import lombok.Setter;
-import me.rockintuna.sailinglog.config.exception.PasswordNeverContainsUsernameException;
-import me.rockintuna.sailinglog.config.exception.PasswordNotEqualsWithCheckException;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotNull;
