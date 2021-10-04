@@ -29,7 +29,7 @@ class AccountServiceTest {
     @Test
     void registerAccount() {
         AccountRequestDto accountRequestDto =
-                new AccountRequestDto("jilee", "password");
+                AccountRequestDto.of("jilee", "password");
 
         articleService.registerAccount(accountRequestDto);
 

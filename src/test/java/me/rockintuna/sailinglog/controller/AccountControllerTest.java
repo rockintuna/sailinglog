@@ -47,7 +47,7 @@ class AccountControllerTest {
 
     @Test
     void register() throws Exception {
-        AccountRequestDto requestDto = new AccountRequestDto("jilee", "password");
+        AccountRequestDto requestDto = AccountRequestDto.of("jilee", "password");
         String json = objectMapper.writeValueAsString(requestDto);
         mvc.perform(post("/account/register")
                         .contentType(MediaType.APPLICATION_JSON)
