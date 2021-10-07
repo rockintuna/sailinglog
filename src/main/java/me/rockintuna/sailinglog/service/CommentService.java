@@ -19,8 +19,8 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final ArticleService articleService;
 
-    public List<Comment> getCommentsByArticleId(Long articleId) {
-        return commentRepository.findALlByArticleId(articleId);
+    public List<Comment> getCommentsByArticleIdOrderByCreatedAtDesc(Long articleId) {
+        return commentRepository.findALlByArticleIdOrderByCreatedAtDesc(articleId);
     }
 
     public Comment createCommentOnArticle(Long articleId, Account account, CommentRequestDto requestDto) {

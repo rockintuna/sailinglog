@@ -22,8 +22,8 @@ public class CommentController {
     private final UserDetailsServiceImpl userDetailsService;
 
     @GetMapping("/articles/{articleId}/comments")
-    public List<Comment> getCommentsByArticleId(@PathVariable("articleId") Long articleId) {
-        return commentService.getCommentsByArticleId(articleId);
+    public List<Comment> getCommentsByArticleIdOrderByCreatedAtDesc(@PathVariable("articleId") Long articleId) {
+        return commentService.getCommentsByArticleIdOrderByCreatedAtDesc(articleId);
     }
 
     @PostMapping("/articles/{articleId}/comments")

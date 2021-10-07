@@ -61,9 +61,9 @@ class CommentServiceTest {
             @Test
             @DisplayName("댓글 목록 조회")
             void getCommentsByArticleId() {
-                given(commentRepository.findALlByArticleId(1L)).willReturn(mockCommentList);
+                given(commentRepository.findALlByArticleIdOrderByCreatedAtDesc(1L)).willReturn(mockCommentList);
 
-                List<Comment> commentList = commentService.getCommentsByArticleId(1L);
+                List<Comment> commentList = commentService.getCommentsByArticleIdOrderByCreatedAtDesc(1L);
 
                 SoftAssertions softly = new SoftAssertions();
                 softly.assertThat(commentList.size()).isEqualTo(mockCommentList.size());
@@ -72,7 +72,7 @@ class CommentServiceTest {
                 softly.assertThat(commentList.get(3).getAccount()).isEqualTo(mockCommentList.get(3).getAccount());
                 softly.assertThat(commentList.get(3).getContent()).isEqualTo(mockCommentList.get(3).getContent());
                 softly.assertAll();
-                verify(commentRepository).findALlByArticleId(1L);
+                verify(commentRepository).findALlByArticleIdOrderByCreatedAtDesc(1L);
             }
 
         }
