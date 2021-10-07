@@ -172,7 +172,7 @@
         let header = $("meta[name='_csrf_header']").attr("content");
         let content = $(`#input-comment-${id}`).val();
 
-        if (isValidContents("dummy", content) == false) {
+        if (isValidComment(content) == false) {
             return;
         }
 
@@ -331,6 +331,14 @@
 
     function isValidContents(title, content) {
         if ( title == '' || content == '' ) {
+            alert("모든 내용을 채워주세요");
+            return false;
+        }
+        return true;
+    }
+
+    function isValidComment(content) {
+        if ( content == '' ) {
             alert("모든 내용을 채워주세요");
             return false;
         }
