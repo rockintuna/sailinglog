@@ -63,7 +63,7 @@
                     let content = article['content'];
                     let account = article['account'];
                     let createdAt = article['createdAt'];
-                    addHTML(id, title, content, account, createdAt);
+                    printAccordionItem(id, title, content, account, createdAt);
                 }
             },
             error: function (request) {
@@ -72,7 +72,7 @@
         })
     }
 
-    function addHTML(id, title, content, account, createdAt) {
+    function printAccordionItem(id, title, content, account, createdAt) {
         let date = createdAt.substring(0,10);
         let time = createdAt.substring(11,19);
         let lineBreakContent = content.replace(/\n/g,"<br />");
@@ -80,7 +80,7 @@
         let tempHtml = `<div class="accordion-item">
             <h2 class="accordion-header" id="article-head">
                 <button id="title-${id}" class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                data-bs-target="#article-${id}" aria-expanded="false" aria-controls="article-${id}">
+                data-bs-target="#article-${id}" aria-expanded="false" aria-controls="article-${id}" onclick="getComments(${id});">
                     ${title}
                 </button>
             </h2>
@@ -111,10 +111,93 @@
                     <button id="delete-${id}" type="button" class="btn btn-outline-danger btn-sm show-with-edit" onclick="deleteArticle('${id}')">삭제</button>
                     <button id="cancel-${id}" type="button" class="btn btn-outline-secondary btn-sm show-with-edit" onclick="editCancel('${id}')">취소</button>
                 </div>
+                <div>
+                    <input id="input-comment-${id}">
+                    <button id="addComment-${id}" type="button" class="btn btn-outline-primary btn-sm" onclick="addComment('${id}')">댓글 달기</button>
+                    <table class="table">
+                      <tbody id="comments-${id}">
+                      </tbody>
+                    </table>
+                </div>
             </div>
         </div>`;
         $('.accordion').append(tempHtml);
     }
+
+    function getComments(id) {
+        $(`#comments-${id}`).empty();
+
+        $.ajax({
+            type: 'GET',
+            url: `/articles/${id}/comments`,
+            success: function (response) {
+                for (let i = 0; i < response.length; i++) {
+                    let comment = response[i];
+                    let commentId = comment['id'];
+                    let username = comment['account'].username;
+                    let content = comment['content'];
+                    let createdAt = comment['createdAt'];
+                    printCommentRow(id, commentId, username, content, createdAt);
+                }
+            },
+            error: function (request) {
+                alert(request.responseText);
+            }
+        })
+    }
+
+    function printCommentRow(articleId, commentId, username, content, createdAt) {
+        let date = createdAt.substring(0,10);
+        let time = createdAt.substring(11,19);
+        let lineBreakContent = content.replace(/\n/g,"<br />");
+
+        let tempHtml = `
+                        <tr id="comment-${commentId}">
+                            <th scope="row">@${username}</th>
+                            <td>${content}</td>
+                            <td>${date} ${time}</td>
+                        </tr>
+                        `;
+        $(`#comments-${articleId}`).append(tempHtml);
+    }
+
+    function addComment(id) {
+        let username = $("meta[name='username']").attr("content")
+        if ( username == null ) {
+            alert('로그인이 필요합니다.');
+            window.location.replace('/account/login');
+            return;
+        }
+        let token = $("meta[name='_csrf']").attr("content");
+        let header = $("meta[name='_csrf_header']").attr("content");
+        let content = $(`#input-comment-${id}`).val();
+
+        if (isValidContents("dummy", content) == false) {
+            return;
+        }
+
+        let data = {'content': content};
+
+
+        $.ajax({
+            type: 'POST',
+            url: `/articles/${id}/comments`,
+            contentType: "application/json",
+            data: JSON.stringify(data),
+            beforeSend: function(xhr) {
+                if(token && header) {
+                    xhr.setRequestHeader(header, token);
+                }
+            },
+            success: function (response) {
+                getComments(id);
+            },
+            error: function (request) {
+                alert(request.responseText);
+            }
+        })
+    }
+
 
     function editPost(id) {
         showEdits(id);

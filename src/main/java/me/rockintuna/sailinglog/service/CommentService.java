@@ -49,9 +49,8 @@ public class CommentService {
     }
 
     private Comment getCommentById(Long commentId) {
-        Comment comment = commentRepository.findById(commentId).orElseThrow(
+        return commentRepository.findById(commentId).orElseThrow(
                 () -> new CommentNotFoundException("댓글을 찾을 수 없습니다.")
         );
-        return comment;
     }
 }
