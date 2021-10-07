@@ -8,6 +8,7 @@ import me.rockintuna.sailinglog.model.Account;
 import me.rockintuna.sailinglog.model.Article;
 import me.rockintuna.sailinglog.model.Comment;
 import me.rockintuna.sailinglog.service.CommentService;
+import me.rockintuna.sailinglog.service.UserDetailsServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -39,9 +40,11 @@ class CommentControllerTest {
 
     @MockBean
     private CommentService commentService;
+    @MockBean
+    private UserDetailsServiceImpl userDetailsService;
 
-    List<Comment> mockCommentList = new ArrayList<>();
-    Article mockArticle;
+    private List<Comment> mockCommentList = new ArrayList<>();
+    private Article mockArticle;
 
     @BeforeEach
     private void beforeEach() {
@@ -49,7 +52,10 @@ class CommentControllerTest {
         mockArticle = Article.from(
                 ArticleRequestDto.of("test title 1", "tester", "test content 1"));
 
-        mockCommentList.add(Comment.of(account, CommentRequestDto.of(mockArticle, "test comments")));
+        mockCommentList.add(Comment.of(account, mockArticle, CommentRequestDto.contentOf("test comments1")));
+        mockCommentList.add(Comment.of(account, mockArticle, CommentRequestDto.contentOf("test comments2")));
+        mockCommentList.add(Comment.of(account, mockArticle, CommentRequestDto.contentOf("test comments3")));
+        mockCommentList.add(Comment.of(account, mockArticle, CommentRequestDto.contentOf("test comments4")));
     }
 
     @Nested
@@ -76,7 +82,7 @@ class CommentControllerTest {
             @Test
             public void createCommentOnArticle() throws Exception {
                 CommentRequestDto requestDto =
-                        CommentRequestDto.of(mockArticle, "test comment2");
+                        CommentRequestDto.contentOf("test comment2");
                 String jsonString = objectMapper.writeValueAsString(requestDto);
 
                 mvc.perform(post("/articles/1/comments")
@@ -98,7 +104,7 @@ class CommentControllerTest {
             @Test
             public void updateComment() throws Exception {
                 CommentRequestDto requestDto =
-                        CommentRequestDto.of(mockArticle, "new comment");
+                        CommentRequestDto.contentOf("new comment");
                 String jsonString = objectMapper.writeValueAsString(requestDto);
 
                 mvc.perform(put("/articles/1/comments/1")

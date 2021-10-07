@@ -17,6 +17,9 @@ public class UserDetailsImpl implements UserDetails {
         return new UserDetailsImpl(account);
     }
 
+    public Account getAccount() {
+        return account;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

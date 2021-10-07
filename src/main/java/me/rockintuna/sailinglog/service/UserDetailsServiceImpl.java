@@ -22,4 +22,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         );
         return UserDetailsImpl.of(account);
     }
+
+    public Account getAccountFrom(UserDetails userDetails) {
+        if ( userDetails instanceof UserDetailsImpl) {
+            return ((UserDetailsImpl) userDetails).getAccount();
+        } else {
+            throw new RuntimeException("계정 정보가 존재하지 않습니다.");
+        }
+    }
 }

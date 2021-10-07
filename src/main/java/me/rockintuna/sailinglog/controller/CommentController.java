@@ -2,8 +2,11 @@ package me.rockintuna.sailinglog.controller;
 
 import lombok.RequiredArgsConstructor;
 import me.rockintuna.sailinglog.dto.CommentRequestDto;
+import me.rockintuna.sailinglog.model.Account;
 import me.rockintuna.sailinglog.model.Comment;
 import me.rockintuna.sailinglog.service.CommentService;
+import me.rockintuna.sailinglog.service.UserDetailsServiceImpl;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +19,7 @@ import java.util.List;
 public class CommentController {
 
     private final CommentService commentService;
+    private final UserDetailsServiceImpl userDetailsService;
 
     @GetMapping("/articles/{articleId}/comments")
     public List<Comment> getCommentsByArticleId(@PathVariable("articleId") Long articleId) {
@@ -23,24 +27,30 @@ public class CommentController {
     }
 
     @PostMapping("/articles/{articleId}/comments")
-    public Comment createCommentOnArticle(@PathVariable("articleId") Long articleId) {
-        return commentService.createCommentOnArticle(articleId);
+    public Comment createCommentOnArticle(@PathVariable("articleId") Long articleId,
+                                          @AuthenticationPrincipal UserDetails userDetails,
+                                          @RequestBody @Valid CommentRequestDto requestDto) {
+        Account account = userDetailsService.getAccountFrom(userDetails);
+        return commentService.createCommentOnArticle(articleId, account, requestDto);
     }
 
     @PutMapping("/articles/{articleId}/comments/{commentId}")
-    public Comment updateComment(
+    public ResponseEntity<Void> updateComment(
             @AuthenticationPrincipal UserDetails userDetails,
             @PathVariable("commentId") Long commentId,
             @RequestBody @Valid CommentRequestDto requestDto) {
         String username = userDetails.getUsername();
-        return commentService.updateComment(commentId, requestDto, username);
+        commentService.updateComment(commentId, requestDto, username);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/articles/{articleId}/comments/{commentId}")
-    public Comment deleteCommentById(
+    public ResponseEntity<Void> deleteCommentById(
             @PathVariable("commentId") Long commentId,
             @AuthenticationPrincipal UserDetails userDetails) {
         String username = userDetails.getUsername();
-        return commentService.deleteCommentById(commentId, username);
+        commentService.deleteCommentById(commentId, username);
+        return ResponseEntity.ok().build();
+
     }
 }

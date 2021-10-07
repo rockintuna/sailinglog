@@ -1,26 +1,23 @@
 package me.rockintuna.sailinglog.dto;
 
 import lombok.Getter;
-import me.rockintuna.sailinglog.model.Article;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 
 @Getter
+@NoArgsConstructor
 public class CommentRequestDto {
 
-    @NotNull
-    private Article article;
     @NotBlank
     private String content;
 
-    private CommentRequestDto(Article article, String content) {
-        this.article = article;
+    private CommentRequestDto(String content) {
         this.content = content;
     }
 
-    public static CommentRequestDto of(Article article, String content) {
-        return new CommentRequestDto(article, content);
+    public static CommentRequestDto contentOf(String content) {
+        return new CommentRequestDto(content);
     }
 }
