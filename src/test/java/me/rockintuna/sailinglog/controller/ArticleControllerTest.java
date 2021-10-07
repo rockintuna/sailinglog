@@ -82,14 +82,14 @@ class ArticleControllerTest {
                         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                         .andExpect(jsonPath("$[0].title")
                                 .value(mockArticleList.get(0).getTitle()))
-                        .andExpect(jsonPath("$[0].writer")
-                                .value(mockArticleList.get(0).getWriter()))
+                        .andExpect(jsonPath("$[0].account")
+                                .value(mockArticleList.get(0).getAccount()))
                         .andExpect(jsonPath("$[0].content")
                                 .value(mockArticleList.get(0).getContent()))
                         .andExpect(jsonPath("$[3].title")
                                 .value(mockArticleList.get(3).getTitle()))
-                        .andExpect(jsonPath("$[3].writer")
-                                .value(mockArticleList.get(3).getWriter()))
+                        .andExpect(jsonPath("$[3].account")
+                                .value(mockArticleList.get(3).getAccount()))
                         .andExpect(jsonPath("$[3].content")
                                 .value(mockArticleList.get(3).getContent()
                                         .replace("<","&lt;")
@@ -110,7 +110,7 @@ class ArticleControllerTest {
                         .andExpect(status().isOk())
                         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                         .andExpect(jsonPath("$.title").value(mockArticleList.get(0).getTitle()))
-                        .andExpect(jsonPath("$.writer").value(mockArticleList.get(0).getWriter()))
+                        .andExpect(jsonPath("$.account").value(mockArticleList.get(0).getAccount()))
                         .andExpect(jsonPath("$.content").value(mockArticleList.get(0).getContent()));
 
                 verify(articleService).getArticleById(1L);
@@ -129,8 +129,8 @@ class ArticleControllerTest {
                         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                         .andExpect(jsonPath("$.title")
                                 .value(mockArticleList.get(3).getTitle()))
-                        .andExpect(jsonPath("$.writer")
-                                .value(mockArticleList.get(3).getWriter()))
+                        .andExpect(jsonPath("$.account")
+                                .value(mockArticleList.get(3).getAccount()))
                         .andExpect(jsonPath("$.content")
                                 .value(mockArticleList.get(3).getContent()
                                         .replace("<","&lt;")
@@ -182,7 +182,7 @@ class ArticleControllerTest {
                         .andExpect(status().isOk())
                         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                         .andExpect(jsonPath("$.title").value(requestDto.getTitle()))
-                        .andExpect(jsonPath("$.writer").value(requestDto.getWriter()))
+                        .andExpect(jsonPath("$.account").value(requestDto.getAccount()))
                         .andExpect(jsonPath("$.content").value(requestDto.getContent()));
 
                 verify(articleService).createArticle(any(ArticleRequestDto.class));
@@ -305,7 +305,7 @@ class ArticleControllerTest {
                 ArticleRequestDto requestDto =
                         ArticleRequestDto.of("test title 1", "tester", "test content 1");
                 String jsonString = objectMapper.writeValueAsString(requestDto)
-                        .replace("writer","retirw");
+                        .replace("account","retirw");
 
                 mvc.perform(post("/articles")
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -531,7 +531,7 @@ class ArticleControllerTest {
                 ArticleRequestDto requestDto =
                         ArticleRequestDto.of("test title 1", "tester", "test content 1");
                 String jsonString = objectMapper.writeValueAsString(requestDto)
-                        .replace("writer","retirw");
+                        .replace("account","retirw");
 
                 mvc.perform(put("/articles/1")
                                 .contentType(MediaType.APPLICATION_JSON)

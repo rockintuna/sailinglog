@@ -6,7 +6,6 @@ import me.rockintuna.sailinglog.config.exception.PermissionDeniedException;
 import me.rockintuna.sailinglog.model.Article;
 import me.rockintuna.sailinglog.repository.ArticleRepository;
 import me.rockintuna.sailinglog.dto.ArticleRequestDto;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -34,7 +33,7 @@ public class ArticleService {
 
     public void updateArticle(Long id, ArticleRequestDto requestDto) {
         Article article = getArticleById(id);
-        String username = requestDto.getWriter();
+        String username = requestDto.getAccount();
         checkPermission(article, username);
         article.updateBy(requestDto);
         articleRepository.save(article);
@@ -53,6 +52,6 @@ public class ArticleService {
     }
 
     private boolean isOwner(Article article, String username) {
-        return username.equals(article.getWriter());
+        return username.equals(article.getAccount());
     }
 }

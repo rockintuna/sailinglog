@@ -70,10 +70,10 @@ class ArticleServiceTest {
                 SoftAssertions softly = new SoftAssertions();
                 softly.assertThat(articleList.size()).isEqualTo(mockArticleList.size());
                 softly.assertThat(articleList.get(0).getTitle()).isEqualTo(mockArticleList.get(0).getTitle());
-                softly.assertThat(articleList.get(0).getWriter()).isEqualTo(mockArticleList.get(0).getWriter());
+                softly.assertThat(articleList.get(0).getAccount()).isEqualTo(mockArticleList.get(0).getAccount());
                 softly.assertThat(articleList.get(0).getContent()).isEqualTo(mockArticleList.get(0).getContent());
                 softly.assertThat(articleList.get(3).getTitle()).isEqualTo(mockArticleList.get(3).getTitle());
-                softly.assertThat(articleList.get(3).getWriter()).isEqualTo(mockArticleList.get(3).getWriter());
+                softly.assertThat(articleList.get(3).getAccount()).isEqualTo(mockArticleList.get(3).getAccount());
                 softly.assertThat(articleList.get(3).getContent()).isEqualTo(mockArticleList.get(3).getContent());
                 softly.assertAll();
                 verify(articleRepository).findAllByOrderByCreatedAtDesc();
@@ -89,7 +89,7 @@ class ArticleServiceTest {
 
                 SoftAssertions softly = new SoftAssertions();
                 softly.assertThat(article.getTitle()).isEqualTo(mockArticleList.get(0).getTitle());
-                softly.assertThat(article.getWriter()).isEqualTo(mockArticleList.get(0).getWriter());
+                softly.assertThat(article.getAccount()).isEqualTo(mockArticleList.get(0).getAccount());
                 softly.assertThat(article.getContent()).isEqualTo(mockArticleList.get(0).getContent());
                 softly.assertAll();
                 verify(articleRepository).findById(1L);
@@ -129,7 +129,7 @@ class ArticleServiceTest {
 
                 SoftAssertions softly = new SoftAssertions();
                 softly.assertThat(savedArticle.getTitle()).isEqualTo(mockArticle.getTitle());
-                softly.assertThat(savedArticle.getWriter()).isEqualTo(mockArticle.getWriter());
+                softly.assertThat(savedArticle.getAccount()).isEqualTo(mockArticle.getAccount());
                 softly.assertThat(savedArticle.getContent()).isEqualTo(mockArticle.getContent());
                 softly.assertAll();
                 verify(articleRepository).save(any(Article.class));

@@ -17,14 +17,14 @@ public class Article extends Timestamped {
     private String title;
 
     @Column(nullable = false)
-    private String writer;
+    private String account;
 
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
     private Article(ArticleRequestDto requestDto) {
         this.title = requestDto.getTitle();
-        this.writer = requestDto.getWriter();
+        this.account = requestDto.getAccount();
         this.content = requestDto.getContent();
     }
 
@@ -34,7 +34,7 @@ public class Article extends Timestamped {
 
     public void updateBy(ArticleRequestDto requestDto) {
         this.title = requestDto.getTitle();
-        this.writer = requestDto.getWriter();
+        this.account = requestDto.getAccount();
         this.content = requestDto.getContent();
     }
 
@@ -43,7 +43,7 @@ public class Article extends Timestamped {
         return "Article{" +
                 "id=" + id +
                 ", title='" + title + '\'' +
-                ", writer='" + writer + '\'' +
+                ", account='" + account + '\'' +
                 ", content='" + content + '\'' +
                 '}';
     }

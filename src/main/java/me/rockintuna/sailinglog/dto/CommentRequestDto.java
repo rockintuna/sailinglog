@@ -4,12 +4,13 @@ import lombok.Getter;
 import me.rockintuna.sailinglog.model.Article;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 
 @Getter
 public class CommentRequestDto {
 
-    @NotBlank
+    @NotNull
     private Article article;
     @NotBlank
     private String content;
@@ -19,7 +20,7 @@ public class CommentRequestDto {
         this.content = content;
     }
 
-    public CommentRequestDto of(Article article, String content) {
+    public static CommentRequestDto of(Article article, String content) {
         return new CommentRequestDto(article, content);
     }
 }

@@ -39,7 +39,7 @@ public class ArticleController {
             @AuthenticationPrincipal UserDetails userDetails
             , @PathVariable Long id
             , @RequestBody @Valid ArticleRequestDto requestDto) {
-        if (!userDetails.getUsername().equals(requestDto.getWriter())) {
+        if (!userDetails.getUsername().equals(requestDto.getAccount())) {
             throw new PermissionDeniedException("권한이 없습니다.");
         }
         articleService.updateArticle(id, requestDto);

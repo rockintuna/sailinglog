@@ -75,7 +75,7 @@ class ArticleRepositoryTest {
         SoftAssertions softly = new SoftAssertions();
         softly.assertThat(saved.getId()).isNotNull();
         softly.assertThat(saved.getTitle()).isEqualTo(article.getTitle());
-        softly.assertThat(saved.getWriter()).isEqualTo(article.getWriter());
+        softly.assertThat(saved.getAccount()).isEqualTo(article.getAccount());
         softly.assertThat(saved.getContent()).isEqualTo(article.getContent());
         softly.assertThat(saved.getCreatedAt()).isNotNull();
         softly.assertThat(saved.getModifiedAt()).isNotNull();

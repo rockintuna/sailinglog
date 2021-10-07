@@ -9,17 +9,17 @@ public class ArticleRequestDto {
     @NotBlank
     private final String title;
     @NotBlank
-    private final String writer;
+    private final String account;
     @NotBlank
     private final String content;
 
-    private ArticleRequestDto(String title, String writer, String content) {
+    private ArticleRequestDto(String title, String account, String content) {
         this.title = title;
-        this.writer = writer;
+        this.account = account;
         this.content = content;
     }
     
-    public static ArticleRequestDto of(String title, String writer, String content) {
-        return new ArticleRequestDto(title, writer, content);
+    public static ArticleRequestDto of(String title, String account, String content) {
+        return new ArticleRequestDto(title, account, content);
     }
 }

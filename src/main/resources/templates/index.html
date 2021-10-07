@@ -61,9 +61,9 @@
                     let id = article['id'];
                     let title = article['title'];
                     let content = article['content'];
-                    let writer = article['writer'];
+                    let account = article['account'];
                     let createdAt = article['createdAt'];
-                    addHTML(id, title, content, writer, createdAt);
+                    addHTML(id, title, content, account, createdAt);
                 }
             },
             error: function (request) {
@@ -72,7 +72,7 @@
         })
     }
 
-    function addHTML(id, title, content, writer, createdAt) {
+    function addHTML(id, title, content, account, createdAt) {
         let date = createdAt.substring(0,10);
         let time = createdAt.substring(11,19);
         let lineBreakContent = content.replace(/\n/g,"<br />");
@@ -89,7 +89,7 @@
                 <div class="accordion-body">
                     <div id="showarea-${id}">
                         <div style="height: 50px;" class="d-flex justify-content-between">
-                            <div id="writer-${id}">@${writer}</div>
+                            <div id="account-${id}">@${account}</div>
                             <div>${date} ${time}</div>
                         </div>
                         <p id="content-${id}">${lineBreakContent}</p>
@@ -160,7 +160,7 @@
             return;
         }
 
-        let data = {'title': title, 'writer': username, 'content': content};
+        let data = {'title': title, 'account': username, 'content': content};
 
         $.ajax({
             type: "POST",
@@ -197,7 +197,7 @@
             return;
         }
 
-        let data = {'title': title, 'writer': username, 'content': content};
+        let data = {'title': title, 'account': username, 'content': content};
 
         $.ajax({
             type: "PUT",
