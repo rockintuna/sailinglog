@@ -39,3 +39,5 @@ out/
 /src/main/resources/static/docs/index.html
 /src/main/resources/static/docs/restdoc/index.html
 /src/main/resources/static/docs/jacoco/index.html
+/src/main/resources/static/docs/jacoco/
+/src/main/resources/static/docs/test/
