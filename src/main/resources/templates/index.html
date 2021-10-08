@@ -80,7 +80,7 @@
         let tempHtml = `<div class="accordion-item">
             <h2 class="accordion-header" id="article-head">
                 <button id="title-${id}" class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                data-bs-target="#article-${id}" aria-expanded="false" aria-controls="article-${id}" onclick="getComments(${id});">
+                data-bs-target="#article-${id}" aria-expanded="false" aria-controls="article-${id}" onclick="commentsTable(${id});">
                     ${title}
                 </button>
             </h2>
@@ -124,6 +124,14 @@
         $('.accordion').append(tempHtml);
     }
 
+    function commentsTable(id) {
+        if ( $(`#comments-${id} > tr`).length == 0 )
+            getComments(id);
+        else {
+            $(`#comments-${id}`).empty();
+        }
+    }
+
     function getComments(id) {
         $(`#comments-${id}`).empty();
 
@@ -165,7 +173,7 @@
                             <td>
                                     <button id="saveCommentButton-${commentId}" type="button" class="btn btn-outline-secondary btn-sm show-with-edit" onclick="saveComment('${articleId}','${commentId}')">저장</button>
                                     <button id="updateCommentButton-${commentId}" type="button" class="btn btn-outline-warning btn-sm" onclick="updateComment('${commentId}')">수정</button>
-                                    <button id="deleteCommentButton-${commentId}" type="button" class="btn btn-outline-danger btn-sm" onclick="deleteComment('${articleId}','${commentId}')">삭제</button>
+                                    <button id="deleteCommentButton-${commentId}" type="button" class="btn btn-outline-danger btn-sm" onclick="deleteCommentCheck('${articleId}','${commentId}')">삭제</button>
                             </td>
                         </tr>
                         `;
@@ -263,8 +271,37 @@
         })
     }
 
-    function deleteComment(articleId, commentId) {
+    function deleteCommentCheck(articleId, commentId) {
+        $('#deleteCommentCheckButton').attr("articleId", articleId);
+        $('#deleteCommentCheckButton').attr("commentId", commentId);
+        $('#commentDeleteModal').modal('show');
+    }
 
+    function deleteComment(articleId, commentId) {
+        let username = $("meta[name='username']").attr("content")
+        if ( username == null ) {
+            alert('로그인이 필요합니다.');
+            window.location.replace('/account/login');
+            return;
+        }
+        let token = $("meta[name='_csrf']").attr("content");
+        let header = $("meta[name='_csrf_header']").attr("content");
+
+        $.ajax({
+            type: 'DELETE',
+            url: `/articles/${articleId}/comments/${commentId}`,
+            beforeSend: function(xhr) {
+                if(token && header) {
+                    xhr.setRequestHeader(header, token);
+                }
+            },
+            success: function (response) {
+                getComments(articleId);
+            },
+            error: function (request) {
+                alert(request.responseText);
+            }
+        })
     }
 
 
@@ -454,6 +491,24 @@
 
 <div class="articles">
     <div class="accordion accordion-flush" id="accordionFlushExample"></div>
+</div>
+
+<div class="modal fade" id="commentDeleteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">댓글 삭제</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                정말로 삭제하시겠습니까?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                <button id="deleteCommentCheckButton" type="button" class="btn btn-primary" data-bs-dismiss="modal" articleId="" commentId="" onclick="deleteComment($('#deleteCommentCheckButton').attr('articleid'),$('#deleteCommentCheckButton').attr('commentId'))">확인</button>
+            </div>
+        </div>
+    </div>
 </div>
 </body>
 </html>
