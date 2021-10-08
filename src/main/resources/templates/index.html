@@ -146,18 +146,34 @@
         })
     }
 
-    function printCommentRow(articleId, commentId, username, content, createdAt) {
+    function printCommentRow(articleId, commentId, writer, content, createdAt) {
+        let username = $("meta[name='username']").attr("content")
         let date = createdAt.substring(0,10);
         let time = createdAt.substring(11,19);
         let lineBreakContent = content.replace(/\n/g,"<br />");
-
-        let tempHtml = `
+        let tempHtml;
+        if ( writer == username ) {
+            tempHtml = `
                         <tr id="comment-${commentId}">
-                            <th scope="row">@${username}</th>
+                            <th scope="row">@${writer}</th>
                             <td>${content}</td>
                             <td>${date} ${time}</td>
+                            <td>
+                                    <button id="updateCommentButton-${commentId}" type="button" class="btn btn-outline-warning btn-sm" onclick="updateComment('${articleId}','${commentId}')">수정</button>
+                                    <button id="deleteCommentButton-${commentId}" type="button" class="btn btn-outline-danger btn-sm" onclick="deleteComment('${articleId}','${commentId}')">삭제</button>
+                            </td>
                         </tr>
                         `;
+        } else {
+            tempHtml = `
+                        <tr id="comment-${commentId}">
+                            <th scope="row">@${writer}</th>
+                            <td>${content}</td>
+                            <td>${date} ${time}</td>
+                            <td></td>
+                        </tr>
+                        `;
+        }
         $(`#comments-${articleId}`).append(tempHtml);
     }
 

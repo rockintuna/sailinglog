@@ -2,7 +2,6 @@ package me.rockintuna.sailinglog.model;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import me.rockintuna.sailinglog.dto.CommentRequestDto;
 
 import javax.persistence.*;
