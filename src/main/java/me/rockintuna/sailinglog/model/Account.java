@@ -1,11 +1,14 @@
 package me.rockintuna.sailinglog.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import me.rockintuna.sailinglog.dto.AccountRequestDto;
 import me.rockintuna.sailinglog.dto.KakaoAccountDto;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -27,6 +30,10 @@ public class Account extends Timestamped{
 
     @Column(unique = true)
     private Long kakaoId;
+
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<Comment> commentList = new ArrayList<>();
 
     private Account(AccountRequestDto requestDto) {
         this.username = requestDto.getUsername();

@@ -1,10 +1,13 @@
 package me.rockintuna.sailinglog.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import me.rockintuna.sailinglog.dto.ArticleRequestDto;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Entity
@@ -21,6 +24,10 @@ public class Article extends Timestamped {
 
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
+
+    @OneToMany(mappedBy = "article", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<Comment> commentList = new ArrayList<>();
 
     private Article(ArticleRequestDto requestDto) {
         this.title = requestDto.getTitle();
