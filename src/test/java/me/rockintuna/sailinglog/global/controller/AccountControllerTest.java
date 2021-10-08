@@ -12,6 +12,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
@@ -22,12 +23,14 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 @WebMvcTest(AccountController.class)
+@AutoConfigureRestDocs
 class AccountControllerTest {
 
     @Autowired
@@ -82,7 +85,8 @@ class AccountControllerTest {
                                 .content(json))
                         .andDo(print())
                         .andExpect(status().is3xxRedirection())
-                        .andExpect(view().name("redirect:/account/login"));
+                        .andExpect(view().name("redirect:/account/login"))
+                        .andDo(document("register"));
 
                 verify(accountService).registerAccount(any(AccountRequestDto.class));
             }

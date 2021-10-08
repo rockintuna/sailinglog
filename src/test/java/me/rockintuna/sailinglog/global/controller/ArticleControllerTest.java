@@ -12,6 +12,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
@@ -27,6 +28,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -34,6 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(ArticleController.class)
+@AutoConfigureRestDocs
 class ArticleControllerTest {
 
     @Autowired
@@ -94,7 +97,8 @@ class ArticleControllerTest {
                         .andExpect(jsonPath("$[3].content")
                                 .value(mockArticleList.get(3).getContent()
                                         .replace("<","&lt;")
-                                        .replace(">","&gt;")));
+                                        .replace(">","&gt;")))
+                        .andDo(document("article/readMany"));
 
                 verify(articleService).getArticlesOrderByCreatedAtDesc();
             }
@@ -112,7 +116,8 @@ class ArticleControllerTest {
                         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                         .andExpect(jsonPath("$.title").value(mockArticleList.get(0).getTitle()))
                         .andExpect(jsonPath("$.account").value(mockArticleList.get(0).getAccount()))
-                        .andExpect(jsonPath("$.content").value(mockArticleList.get(0).getContent()));
+                        .andExpect(jsonPath("$.content").value(mockArticleList.get(0).getContent()))
+                        .andDo(document("article/readOne"));
 
                 verify(articleService).getArticleById(1L);
             }
@@ -184,7 +189,8 @@ class ArticleControllerTest {
                         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                         .andExpect(jsonPath("$.title").value(requestDto.getTitle()))
                         .andExpect(jsonPath("$.account").value(requestDto.getAccount()))
-                        .andExpect(jsonPath("$.content").value(requestDto.getContent()));
+                        .andExpect(jsonPath("$.content").value(requestDto.getContent()))
+                        .andDo(document("article/create"));
 
                 verify(articleService).createArticle(any(ArticleRequestDto.class));
             }
@@ -372,7 +378,8 @@ class ArticleControllerTest {
                                 .with(user("tester").roles("USER"))
                                 .with(csrf()))
                         .andDo(print())
-                        .andExpect(status().isOk());
+                        .andExpect(status().isOk())
+                        .andDo(document("article/update"));
 
                 verify(articleService).updateArticle(eq(1L), any(ArticleRequestDto.class));
             }
@@ -612,7 +619,8 @@ class ArticleControllerTest {
                                 .with(user("jilee").roles("USER"))
                                 .with(csrf()))
                         .andDo(print())
-                        .andExpect(status().isOk());
+                        .andExpect(status().isOk())
+                        .andDo(document("article/delete"));
 
                 verify(articleService).deleteArticle(1L, "jilee");
             }
