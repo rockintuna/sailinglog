@@ -36,3 +36,6 @@ out/
 
 ### VS Code ###
 .vscode/
+/src/main/resources/static/docs/index.html
+/src/main/resources/static/docs/restdoc/index.html
+/src/main/resources/static/docs/jacoco/index.html

@@ -30,7 +30,11 @@ bootJar {
     dependsOn asciidoctor
     copy {
         from "${asciidoctor.outputDir}"
-        into "src/main/resources/static/docs"
+        into "src/main/resources/static/docs/restdoc"
+    }
+    copy {
+        from "build/reports/tests/test/index.html"
+        into "src/main/resources/static/docs/jacoco"
     }
 }
 
