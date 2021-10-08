@@ -142,7 +142,7 @@
                 for (let i = 0; i < response.length; i++) {
                     let comment = response[i];
                     let commentId = comment['id'];
-                    let username = comment['account'].username;
+                    let username = comment['username'];
                     let content = comment['content'];
                     let createdAt = comment['createdAt'];
                     printCommentRow(id, commentId, username, content, createdAt);

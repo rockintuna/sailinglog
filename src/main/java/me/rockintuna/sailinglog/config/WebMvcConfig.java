@@ -2,6 +2,7 @@ package me.rockintuna.sailinglog.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import me.rockintuna.sailinglog.config.validator.HtmlCharacterEscapes;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverter;

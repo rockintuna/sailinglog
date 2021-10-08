@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import me.rockintuna.sailinglog.config.exception.PasswordNeverContainsUsernameException;
 import me.rockintuna.sailinglog.config.exception.PasswordNotEqualsWithCheckException;
 import me.rockintuna.sailinglog.config.exception.UsernameExistException;
-import me.rockintuna.sailinglog.dto.AccountRequestDto;
-import me.rockintuna.sailinglog.repository.AccountRepository;
+import me.rockintuna.sailinglog.account.AccountRequestDto;
+import me.rockintuna.sailinglog.account.AccountRepository;
 import org.springframework.stereotype.Component;
 
 @Component
