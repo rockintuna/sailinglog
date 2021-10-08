@@ -55,4 +55,8 @@ public class Article extends Timestamped {
                 ", content='" + content + '\'' +
                 '}';
     }
+
+    public boolean isWritedBy(String username) {
+        return username.equals(this.account);
+    }
 }
